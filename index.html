@@ -3,44 +3,42 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WebCric Pro - Live Sports</title>
+    <title>WebCric Pro</title>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
     <style>
-        body { background: #f4f4f4; font-family: 'Helvetica', sans-serif; margin: 0; padding: 0; }
-        .nav-bar { background: #1a1a1a; color: white; padding: 15px; font-size: 22px; font-weight: bold; border-bottom: 4px solid #e91e63; }
+        body { background: #121212; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 0; color: #fff; }
+        .nav-bar { background: #1f1f1f; padding: 15px; text-align: center; font-size: 24px; font-weight: bold; border-bottom: 3px solid #ff0055; box-shadow: 0 2px 10px rgba(0,0,0,0.5); }
+        .container { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; padding: 25px; max-width: 1200px; margin: auto; }
         
-        /* Grid System like WebCric */
-        .container { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px; padding: 20px; max-width: 1200px; margin: auto; }
+        .match-card { background: #2a2a2a; border-radius: 12px; padding: 20px; text-align: center; transition: 0.3s; border: 1px solid #333; position: relative; overflow: hidden; }
+        .match-card:hover { transform: translateY(-5px); border-color: #ff0055; box-shadow: 0 5px 15px rgba(255, 0, 85, 0.3); }
         
-        .match-card { background: white; border: 1px solid #ddd; border-radius: 4px; padding: 15px; text-align: center; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
-        .status-tag { display: inline-block; padding: 3px 8px; font-size: 10px; font-weight: bold; border-radius: 3px; margin-bottom: 10px; text-transform: uppercase; }
-        .live { background: #4caf50; color: white; }
-        .ended { background: #f44336; color: white; }
+        .status-tag { position: absolute; top: 0; right: 0; padding: 5px 15px; font-size: 10px; font-weight: bold; border-bottom-left-radius: 12px; text-transform: uppercase; }
+        .live { background: #00ff88; color: #000; }
+        .ended { background: #555; color: #fff; }
         
-        .teams { display: flex; justify-content: space-around; align-items: center; margin: 10px 0; }
-        .teams img { width: 70px; height: 70px; object-fit: contain; }
-        .vs { font-weight: bold; color: #999; font-size: 18px; }
+        .teams { display: flex; justify-content: space-around; align-items: center; margin: 15px 0; }
+        .teams img { width: 80px; height: 80px; object-fit: contain; filter: drop-shadow(0 0 5px rgba(255,255,255,0.2)); }
+        .vs { font-weight: bold; color: #ff0055; font-size: 22px; }
         
-        .match-title { font-size: 16px; font-weight: bold; margin: 10px 0; min-height: 40px; }
-        .btn-group { display: flex; flex-wrap: wrap; gap: 5px; justify-content: center; }
-        .btn { padding: 8px 12px; font-size: 11px; font-weight: bold; border: none; border-radius: 3px; cursor: pointer; color: white; text-transform: uppercase; }
-        .btn-grey { background: #333; }
-        .btn-red { background: #d32f2f; }
+        .match-title { font-size: 18px; font-weight: 600; margin: 15px 0; color: #eee; min-height: 50px; }
+        .btn-group { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+        .btn { padding: 10px; font-size: 12px; font-weight: bold; border: none; border-radius: 6px; cursor: pointer; color: white; text-transform: uppercase; transition: 0.2s; }
+        .btn-grey { background: #444; } .btn-grey:hover { background: #666; }
+        .btn-red { background: #ff0055; grid-column: span 2; } .btn-red:hover { background: #d60047; }
         
-        #player-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 1000; }
-        .player-box { width: 95%; max-width: 850px; margin: 10% auto; position: relative; }
-        iframe { width: 100%; aspect-ratio: 16/9; border: 2px solid #e91e63; }
-        .close-btn { color: white; position: absolute; top: -40px; right: 0; font-size: 30px; cursor: pointer; }
+        #player-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.98); z-index: 1000; }
+        .player-box { width: 95%; max-width: 900px; margin: 5% auto; position: relative; }
+        iframe { width: 100%; aspect-ratio: 16/9; border: 2px solid #ff0055; border-radius: 8px; box-shadow: 0 0 30px rgba(255, 0, 85, 0.5); }
+        .close-btn { color: #fff; position: absolute; top: -45px; right: 0; font-size: 40px; cursor: pointer; }
     </style>
 </head>
 <body>
 
-<div class="nav-bar">WebCric - Live Cricket Streaming</div>
+<div class="nav-bar">WebCric - Live Streaming</div>
 
-<div class="container" id="matches-grid">
-    <!-- Matches will load here automatically -->
-</div>
+<div class="container" id="matches-grid"></div>
 
 <div id="player-overlay">
     <div class="player-box">
@@ -62,37 +60,42 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
-    // Fetching all matches from 'AllMatches' node
     db.ref('AllMatches').on('value', (snapshot) => {
         const grid = document.getElementById('matches-grid');
-        grid.innerHTML = ""; // Clear old data
+        grid.innerHTML = "";
         
         snapshot.forEach((childSnapshot) => {
             const m = childSnapshot.val();
-            const statusClass = m.Status === "Live" ? "live" : "ended";
+            // Flexible keys: Title ya title, Status ya status
+            const title = m.Title || m.title || "Match Live";
+            const status = m.Status || m.status || "Series End";
+            const t1 = m.T1_Logo || m.t1_logo || 'https://via.placeholder.com/80?text=T1';
+            const t2 = m.T2_Logo || m.t2_logo || 'https://via.placeholder.com/80?text=T2';
+            const low = m.Low || m.low || "";
+            const high = m.High || m.high || "";
+            const statusClass = status.toLowerCase() === "live" ? "live" : "ended";
             
-            const cardHTML = `
+            grid.innerHTML += `
                 <div class="match-card">
-                    <span class="status-tag ${statusClass}">${m.Status || 'Series End'}</span>
+                    <span class="status-tag ${statusClass}">${status}</span>
                     <div class="teams">
-                        <img src="${m.T1_Logo || ''}" alt="T1">
+                        <img src="${t1}" alt="T1">
                         <span class="vs">VS</span>
-                        <img src="${m.T2_Logo || ''}" alt="T2">
+                        <img src="${t2}" alt="T2">
                     </div>
-                    <div class="match-title">${m.Title}</div>
+                    <div class="match-title">${title}</div>
                     <div class="btn-group">
-                        <button class="btn btn-grey" onclick="openPlayer('${m.Low}')">Low Quality</button>
-                        <button class="btn btn-grey" onclick="openPlayer('${m.High}')">High Quality</button>
-                        <button class="btn btn-red" onclick="openPlayer('${m.Server3 || m.High}')">Server 3</button>
+                        <button class="btn btn-grey" onclick="openPlayer('${low}')">Low Quality</button>
+                        <button class="btn btn-grey" onclick="openPlayer('${high}')">High Quality</button>
+                        <button class="btn btn-red" onclick="openPlayer('${high}')">Server 3 (HD)</button>
                     </div>
                 </div>
             `;
-            grid.innerHTML += cardHTML;
         });
     });
 
     function openPlayer(url) {
-        if(!url) return alert("Link not active!");
+        if(!url || url === "undefined" || url === "") return alert("Streaming Link Error: Check Firebase!");
         document.getElementById('main-player').src = url;
         document.getElementById('player-overlay').style.display = 'block';
     }
