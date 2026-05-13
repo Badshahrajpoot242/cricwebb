@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Cricwebb Live</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Firebase Libraries -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; background: #1a1a1a; color: #fff; text-align: center; margin: 0; padding: 20px; }
+        .match-box { background: #2d2d2d; padding: 30px; border-radius: 15px; max-width: 500px; margin: auto; border: 2px solid #e91e63; box-shadow: 0 4px 15px rgba(0,0,0,0.5); }
+        h2 { color: #e91e63; }
+        .btn { background: #e91e63; color: #fff; padding: 12px 25px; text-decoration: none; border-radius: 30px; display: inline-block; margin-top: 20px; font-weight: bold; font-size: 18px; cursor: pointer; transition: 0.3s; }
+        .btn:hover { background: #c2185b; transform: scale(1.05); }
+        #player { width: 100%; height: 300px; background: #000; display: none; margin-top: 20px; border-radius: 10px; overflow: hidden; }
+    </style>
+</head>
+<body>
+
+    <div class="match-box">
+        <h2>CRICWEBB LIVE</h2>
+        <h3 id="match-title">Connecting to Server...</h3>
+        
+        <div id="player">
+            <iframe id="video-frame" src="" width="100%" height="100%" frameborder="0" allowfullscreen></iframe>
+        </div>
+        
+        <button id="play-btn" class="btn" style="display: none;">WATCH LIVE NOW</button>
+    </div>
+
+    <script>
+        // Firebase Config from your screenshot 1778698591131.jpeg
+        const firebaseConfig = {
+            apiKey: "AIzaSyCEg2Ijax96IMMsREqEX85_zHRkvqFLcN0",
+            authDomain: "cricwebb.firebaseapp.com",
+            databaseURL: "https://cricwebb-default-rtdb.firebaseio.com",
+            projectId: "cricwebb",
+            storageBucket: "cricwebb.appspot.com",
+            messagingSenderId: "931715470347",
+            appId: "1:931715470347:web:68bf78f3f7abde18cbe30e"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+        // Listen for Link Updates in Realtime
+        db.ref('Rcb').on('value', (snapshot) => {
+            const streamUrl = snapshot.val();
+            const titleElement = document.getElementById('match-title');
+            const playBtn = document.getElementById('play-btn');
+            const playerDiv = document.getElementById('player');
+            const iframe = document.getElementById('video-frame');
+
+            if (streamUrl) {
+                titleElement.innerText = "Match is LIVE ✅";
+                playBtn.style.display = "inline-block";
+                
+                playBtn.onclick = function() {
+                    playerDiv.style.display = "block";
+                    iframe.src = streamUrl;
+                    playBtn.style.display = "none";
+                };
+            } else {
+                titleElement.innerText = "No Live Match Currently ❌";
+                playBtn.style.display = "none";
+            }
+        });
+    </script>
+</body>
+</html>
