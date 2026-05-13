@@ -3,74 +3,64 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CricWebb - Live Sports</title>
+    <title>CricWebb - Premium Hub</title>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
     <style>
-        /* Professional Dark Theme */
-        body { 
-            background: #0a0a0a; 
-            font-family: 'Segoe UI', Roboto, sans-serif; 
-            margin: 0; padding: 0; color: #fff; 
-        }
+        body { background: #0a0a0a; font-family: 'Segoe UI', Roboto, sans-serif; margin: 0; color: #fff; }
         
-        /* Header styling like WWE/Sports Apps */
         .header { 
-            background: linear-gradient(180deg, #1a1a1a 0%, #000 100%); 
-            padding: 12px; text-align: center; 
-            border-bottom: 3px solid #d31d43; 
-            position: sticky; top: 0; z-index: 1000;
+            background: #161616; padding: 15px; text-align: center; 
+            border-bottom: 3px solid #d31d43; position: sticky; top: 0; z-index: 1000;
         }
-        .logo-text { font-size: 22px; font-weight: 900; text-transform: uppercase; letter-spacing: 2px; }
+        .logo-text { font-size: 24px; font-weight: 900; text-transform: uppercase; letter-spacing: 2px; }
         .logo-text span { color: #d31d43; }
 
-        /* Grid for 2 cards side-by-side on mobile */
         .container { 
             display: grid; 
-            grid-template-columns: repeat(auto-fill, minmax(165px, 1fr)); 
-            gap: 12px; padding: 12px; max-width: 1200px; margin: auto; 
-        }
-        
-        .match-card { 
-            background: #161616; border: 1px solid #2a2a2a; border-radius: 10px; 
-            padding: 12px; display: flex; flex-direction: column; 
-            transition: 0.3s; box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); 
+            gap: 20px; padding: 20px; max-width: 1400px; margin: auto; 
         }
 
-        /* Teams Side-by-Side */
-        .teams-row { 
-            display: flex; justify-content: space-between; align-items: center; 
-            margin-bottom: 10px; padding: 5px 0;
+        .match-card { 
+            background: #1c1c1c; border: 1px solid #333; border-radius: 12px; 
+            padding: 15px; transition: 0.3s;
         }
-        .team-logo-box { width: 42%; text-align: center; }
-        .team-logo-box img { 
-            width: 55px; height: 55px; object-fit: contain; 
-            background: #fff; border-radius: 50%; padding: 3px; 
-            border: 2px solid #333;
-        }
-        .vs-divider { font-size: 12px; font-weight: bold; color: #d31d43; text-shadow: 0 0 5px rgba(211,29,67,0.5); }
-        
-        /* Title center aligned below teams */
+        .match-card:hover { border-color: #d31d43; transform: scale(1.02); }
+
+        /* Teams Alignment */
+        .teams-row { display: flex; justify-content: space-around; align-items: center; margin-bottom: 10px; }
+        .team-box { text-align: center; width: 40%; }
+        .team-box img { width: 60px; height: 60px; object-fit: contain; background: #fff; border-radius: 50%; padding: 4px; }
+        .vs { font-weight: bold; color: #d31d43; font-size: 14px; }
+
+        /* Single Line Title Fix */
         .match-title { 
-            font-size: 12px; font-weight: 700; text-align: center; 
-            margin: 8px 0; color: #f0f0f0; line-height: 1.3;
-            min-height: 32px; display: flex; align-items: center; justify-content: center;
+            font-size: 14px; font-weight: bold; text-align: center; 
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis; /* Ek line mein rakhega */
+            margin: 10px 0; color: #fff; border-bottom: 1px solid #333; padding-bottom: 10px;
         }
+
+        /* All Buttons Grid */
+        .btn-section-title { font-size: 10px; color: #888; text-transform: uppercase; margin: 5px 0; font-weight: bold; }
+        .btn-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 5px; margin-bottom: 10px; }
         
-        /* Compact Buttons */
-        .btn-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; margin-top: 5px; }
         .btn { 
             padding: 8px 2px; font-size: 10px; font-weight: bold; border: none; 
             border-radius: 4px; cursor: pointer; color: #fff; text-transform: uppercase; 
         }
+        
+        .btn-gray { background: #333; }
+        .btn-gray:hover { background: #444; }
         .btn-blue { background: #0062cc; }
-        .btn-red { background: #d31d43; grid-column: span 2; margin-top: 3px; }
+        .btn-blue:hover { background: #007bff; }
+        .btn-orange { background: #ff5722; }
+        .btn-red { background: #d31d43; grid-column: span 3; margin-top: 5px; font-size: 12px; padding: 10px; }
 
-        /* Modal Player Overlay */
-        #player-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 2000; }
-        .modal-top { display: flex; justify-content: space-between; align-items: center; padding: 15px; background: #1a1a1a; }
-        .close-btn { color: #fff; font-size: 28px; cursor: pointer; line-height: 1; }
-        .video-box { width: 100%; max-width: 900px; margin: auto; aspect-ratio: 16/9; }
+        /* Modal Player */
+        #player-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 2000; }
+        .video-box { width: 100%; max-width: 900px; margin: 50px auto; aspect-ratio: 16/9; position: relative; }
+        .close-btn { position: absolute; top: -40px; right: 0; color: #fff; font-size: 30px; cursor: pointer; }
         iframe { width: 100%; height: 100%; border: none; }
     </style>
 </head>
@@ -80,59 +70,62 @@
     <div class="logo-text">CRIC<span>WEBB</span></div>
 </div>
 
-<div class="container" id="match-display"></div>
+<div class="container" id="match-list"></div>
 
 <div id="player-modal">
-    <div class="modal-top">
-        <span id="now-playing" style="font-size: 14px; font-weight: bold; color: #00bff3;">Loading...</span>
-        <span class="close-btn" onclick="closePlayer()">&times;</span>
-    </div>
     <div class="video-box">
-        <iframe id="main-player" src="" allowfullscreen scrolling="no"></iframe>
+        <span class="close-btn" onclick="closeVideo()">&times; Close</span>
+        <iframe id="video-frame" src="" allowfullscreen></iframe>
     </div>
 </div>
 
 <script>
-    // Firebase Configuration
     const firebaseConfig = { databaseURL: "https://cricwebb-default-rtdb.firebaseio.com" };
     firebase.initializeApp(firebaseConfig);
     
     firebase.database().ref('AllMatches').on('value', (snapshot) => {
-        const display = document.getElementById('match-display');
-        display.innerHTML = "";
+        const list = document.getElementById('match-list');
+        list.innerHTML = "";
         snapshot.forEach((child) => {
-            const data = child.val();
-            
-            display.innerHTML += `
+            const m = child.val();
+            list.innerHTML += `
                 <div class="match-card">
                     <div class="teams-row">
-                        <div class="team-logo-box"><img src="${data.T1_Logo || ''}"></div>
-                        <div class="vs-divider">VS</div>
-                        <div class="team-logo-box"><img src="${data.T2_Logo || ''}"></div>
+                        <div class="team-box"><img src="${m.T1_Logo}"></div>
+                        <div class="vs">VS</div>
+                        <div class="team-box"><img src="${m.T2_Logo}"></div>
                     </div>
-                    <div class="match-title">${data.Title}</div>
+                    <div class="match-title" title="${m.Title}">${m.Title}</div>
+                    
+                    <div class="btn-section-title">Quality Options</div>
                     <div class="btn-grid">
-                        <button class="btn btn-blue" onclick="openPlayer('${data.Low}', '${data.Title}')">Server 1</button>
-                        <button class="btn btn-blue" onclick="openPlayer('${data.High}', '${data.Title}')">Server 2</button>
-                        <button class="btn btn-red" onclick="openPlayer('${data.High}', '${data.Title}')">PTV SPORTS LIVE</button>
+                        <button class="btn btn-gray" onclick="play('${m.Low}')">Low</button>
+                        <button class="btn btn-gray" onclick="play('${m.High}')">Medium</button>
+                        <button class="btn btn-gray" onclick="play('${m.High}')">High</button>
                     </div>
+
+                    <div class="btn-section-title">Extra Servers</div>
+                    <div class="btn-grid">
+                        <button class="btn btn-blue" onclick="play('${m.High}')">Server 1</button>
+                        <button class="btn btn-blue" onclick="play('${m.High}')">Server 2</button>
+                        <button class="btn btn-orange" onclick="play('${m.High}')">Star Sports</button>
+                    </div>
+
+                    <button class="btn btn-red" onclick="play('${m.High}')">📺 PTV SPORTS LIVE</button>
                 </div>
             `;
         });
     });
 
-    function openPlayer(url, title) {
-        if(!url) return alert("Link coming soon!");
-        document.getElementById('now-playing').innerText = title;
-        document.getElementById('main-player').src = url;
+    function play(url) {
+        if(!url) return;
+        document.getElementById('video-frame').src = url;
         document.getElementById('player-modal').style.display = 'block';
-        document.body.style.overflow = 'hidden';
     }
 
-    function closePlayer() {
-        document.getElementById('main-player').src = "";
+    function closeVideo() {
+        document.getElementById('video-frame').src = "";
         document.getElementById('player-modal').style.display = 'none';
-        document.body.style.overflow = 'auto';
     }
 </script>
 </body>
