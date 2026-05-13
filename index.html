@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cricwebb Dynamic</title>
+    <title>Cricwebb Live</title>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
     <style>
@@ -11,13 +11,13 @@
         .match-card { background: white; max-width: 400px; margin: 20px auto; padding: 15px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); border: 1px solid #ccc; }
         .header-title { background: #1a1a1a; color: #fff; padding: 10px; font-weight: bold; margin-bottom: 15px; }
         .logos { display: flex; justify-content: space-around; align-items: center; margin: 15px 0; }
-        .logos img { width: 70px; height: 70px; object-fit: contain; }
+        .logos img { width: 80px; height: 80px; object-fit: contain; }
         .vs { font-weight: bold; color: #666; font-size: 20px; }
-        #match-name { font-size: 18px; font-weight: bold; margin-bottom: 15px; display: block; }
-        .btn-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-        button { padding: 10px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; color: white; }
+        #match-name { font-size: 18px; font-weight: bold; margin-bottom: 15px; display: block; color: #000; }
+        .btn-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        button { padding: 12px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; color: white; text-transform: uppercase; }
         .btn-low { background: #333; } .btn-high { background: #d32f2f; }
-        iframe { width: 100%; aspect-ratio: 16/9; margin-top: 10px; display: none; border: 2px solid #d32f2f; }
+        iframe { width: 100%; aspect-ratio: 16/9; margin-top: 15px; display: none; border: 2px solid #d32f2f; border-radius: 5px; }
     </style>
 </head>
 <body>
@@ -28,21 +28,20 @@
     <span id="match-name">Loading Match...</span>
     
     <div class="logos">
-        <img id="logo1" src="https://via.placeholder.com/70" alt="Team 1">
+        <img id="logo1" src="https://via.placeholder.com/80" alt="T1">
         <span class="vs">VS</span>
-        <img id="logo2" src="https://via.placeholder.com/70" alt="Team 2">
+        <img id="logo2" src="https://via.placeholder.com/80" alt="T2">
     </div>
 
     <div class="btn-grid">
-        <button class="btn-low" onclick="play('low')">Low Quality</button>
-        <button class="btn-high" onclick="play('high')">High Quality</button>
+        <button class="btn-low" onclick="play('Low')">Low Quality</button>
+        <button class="btn-high" onclick="play('High')">High Quality</button>
     </div>
 
     <iframe id="video-player" src="" allowfullscreen></iframe>
 </div>
 
 <script>
-    // Apni Config yahan lazmi dalien
     const firebaseConfig = {
         apiKey: "AIzaSyCEg2Ijax96IMMsREqEX85_zHRkvqFLcN0",
         authDomain: "cricwebb.firebaseapp.com",
@@ -52,26 +51,31 @@
         messagingSenderId: "931715470347",
         appId: "1:931715470347:web:68bf78f3f7abde18cbe30e"
     };
+    
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
-    // Ye function Firebase se data khud hi khench kar layega
-    db.ref('CurrentMatch').on('value', (snapshot) => {
+    // Aapke Firebase node 'Current' se connect ho raha hai
+    db.ref('Current').on('value', (snapshot) => {
         const data = snapshot.val();
         if(data) {
-            document.getElementById('match-name').innerText = data.title;
-            document.getElementById('logo1').src = data.t1_logo;
-            document.getElementById('logo2').src = data.t2_logo;
+            // Firebase ke 'Title', 't1_logo' aur 't2_logo' ko yahan fetch kar rahe hain
+            document.getElementById('match-name').innerText = data.Title || "Match Live";
+            if(data.t1_logo) document.getElementById('logo1').src = data.t1_logo;
+            if(data.t2_logo) document.getElementById('logo2').src = data.t2_logo;
         }
     });
 
     function play(quality) {
-        db.ref('CurrentMatch/' + quality).once('value').then((snap) => {
+        db.ref('Current/' + quality).once('value').then((snap) => {
             const url = snap.val();
             if(url) {
                 const player = document.getElementById('video-player');
                 player.src = url;
                 player.style.display = 'block';
+                window.scrollTo({top: 0, behavior: 'smooth'});
+            } else {
+                alert("Link not found in Firebase!");
             }
         });
     }
