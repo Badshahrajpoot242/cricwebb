@@ -3,42 +3,50 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cricwebb Live</title>
+    <title>WebCric Pro - Live Sports</title>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
     <style>
-        body { background: #f0f0f0; font-family: sans-serif; margin: 0; padding: 10px; text-align: center; }
-        .match-card { background: white; max-width: 400px; margin: 20px auto; padding: 15px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); border: 1px solid #ccc; }
-        .header-title { background: #1a1a1a; color: #fff; padding: 10px; font-weight: bold; margin-bottom: 15px; }
-        .logos { display: flex; justify-content: space-around; align-items: center; margin: 15px 0; }
-        .logos img { width: 80px; height: 80px; object-fit: contain; }
-        .vs { font-weight: bold; color: #666; font-size: 20px; }
-        #match-name { font-size: 18px; font-weight: bold; margin-bottom: 15px; display: block; color: #000; }
-        .btn-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        button { padding: 12px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; color: white; text-transform: uppercase; }
-        .btn-low { background: #333; } .btn-high { background: #d32f2f; }
-        iframe { width: 100%; aspect-ratio: 16/9; margin-top: 15px; display: none; border: 2px solid #d32f2f; border-radius: 5px; }
+        body { background: #f4f4f4; font-family: 'Helvetica', sans-serif; margin: 0; padding: 0; }
+        .nav-bar { background: #1a1a1a; color: white; padding: 15px; font-size: 22px; font-weight: bold; border-bottom: 4px solid #e91e63; }
+        
+        /* Grid System like WebCric */
+        .container { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px; padding: 20px; max-width: 1200px; margin: auto; }
+        
+        .match-card { background: white; border: 1px solid #ddd; border-radius: 4px; padding: 15px; text-align: center; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .status-tag { display: inline-block; padding: 3px 8px; font-size: 10px; font-weight: bold; border-radius: 3px; margin-bottom: 10px; text-transform: uppercase; }
+        .live { background: #4caf50; color: white; }
+        .ended { background: #f44336; color: white; }
+        
+        .teams { display: flex; justify-content: space-around; align-items: center; margin: 10px 0; }
+        .teams img { width: 70px; height: 70px; object-fit: contain; }
+        .vs { font-weight: bold; color: #999; font-size: 18px; }
+        
+        .match-title { font-size: 16px; font-weight: bold; margin: 10px 0; min-height: 40px; }
+        .btn-group { display: flex; flex-wrap: wrap; gap: 5px; justify-content: center; }
+        .btn { padding: 8px 12px; font-size: 11px; font-weight: bold; border: none; border-radius: 3px; cursor: pointer; color: white; text-transform: uppercase; }
+        .btn-grey { background: #333; }
+        .btn-red { background: #d32f2f; }
+        
+        #player-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 1000; }
+        .player-box { width: 95%; max-width: 850px; margin: 10% auto; position: relative; }
+        iframe { width: 100%; aspect-ratio: 16/9; border: 2px solid #e91e63; }
+        .close-btn { color: white; position: absolute; top: -40px; right: 0; font-size: 30px; cursor: pointer; }
     </style>
 </head>
 <body>
 
-<div class="header-title">LIVE STREAMING DASHBOARD</div>
+<div class="nav-bar">WebCric - Live Cricket Streaming</div>
 
-<div class="match-card">
-    <span id="match-name">Loading Match...</span>
-    
-    <div class="logos">
-        <img id="logo1" src="https://via.placeholder.com/80" alt="T1">
-        <span class="vs">VS</span>
-        <img id="logo2" src="https://via.placeholder.com/80" alt="T2">
+<div class="container" id="matches-grid">
+    <!-- Matches will load here automatically -->
+</div>
+
+<div id="player-overlay">
+    <div class="player-box">
+        <span class="close-btn" onclick="closePlayer()">×</span>
+        <iframe id="main-player" src="" allowfullscreen></iframe>
     </div>
-
-    <div class="btn-grid">
-        <button class="btn-low" onclick="play('Low')">Low Quality</button>
-        <button class="btn-high" onclick="play('High')">High Quality</button>
-    </div>
-
-    <iframe id="video-player" src="" allowfullscreen></iframe>
 </div>
 
 <script>
@@ -51,33 +59,47 @@
         messagingSenderId: "931715470347",
         appId: "1:931715470347:web:68bf78f3f7abde18cbe30e"
     };
-    
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
-    // Aapke Firebase node 'Current' se connect ho raha hai
-    db.ref('Current').on('value', (snapshot) => {
-        const data = snapshot.val();
-        if(data) {
-            // Firebase ke 'Title', 't1_logo' aur 't2_logo' ko yahan fetch kar rahe hain
-            document.getElementById('match-name').innerText = data.Title || "Match Live";
-            if(data.t1_logo) document.getElementById('logo1').src = data.t1_logo;
-            if(data.t2_logo) document.getElementById('logo2').src = data.t2_logo;
-        }
+    // Fetching all matches from 'AllMatches' node
+    db.ref('AllMatches').on('value', (snapshot) => {
+        const grid = document.getElementById('matches-grid');
+        grid.innerHTML = ""; // Clear old data
+        
+        snapshot.forEach((childSnapshot) => {
+            const m = childSnapshot.val();
+            const statusClass = m.Status === "Live" ? "live" : "ended";
+            
+            const cardHTML = `
+                <div class="match-card">
+                    <span class="status-tag ${statusClass}">${m.Status || 'Series End'}</span>
+                    <div class="teams">
+                        <img src="${m.T1_Logo || ''}" alt="T1">
+                        <span class="vs">VS</span>
+                        <img src="${m.T2_Logo || ''}" alt="T2">
+                    </div>
+                    <div class="match-title">${m.Title}</div>
+                    <div class="btn-group">
+                        <button class="btn btn-grey" onclick="openPlayer('${m.Low}')">Low Quality</button>
+                        <button class="btn btn-grey" onclick="openPlayer('${m.High}')">High Quality</button>
+                        <button class="btn btn-red" onclick="openPlayer('${m.Server3 || m.High}')">Server 3</button>
+                    </div>
+                </div>
+            `;
+            grid.innerHTML += cardHTML;
+        });
     });
 
-    function play(quality) {
-        db.ref('Current/' + quality).once('value').then((snap) => {
-            const url = snap.val();
-            if(url) {
-                const player = document.getElementById('video-player');
-                player.src = url;
-                player.style.display = 'block';
-                window.scrollTo({top: 0, behavior: 'smooth'});
-            } else {
-                alert("Link not found in Firebase!");
-            }
-        });
+    function openPlayer(url) {
+        if(!url) return alert("Link not active!");
+        document.getElementById('main-player').src = url;
+        document.getElementById('player-overlay').style.display = 'block';
+    }
+
+    function closePlayer() {
+        document.getElementById('main-player').src = "";
+        document.getElementById('player-overlay').style.display = 'none';
     }
 </script>
 </body>
