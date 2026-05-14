@@ -3,64 +3,70 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CricWebb Pro - Final Edition</title>
+    <title>CricWebb - Professional Streaming</title>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
-        body { margin:0; font-family:'Poppins',sans-serif; background:#f0f2f5; }
-        .header { background:#001f3f; color:#fff; padding:15px; display:flex; align-items:center; position:sticky; top:0; z-index:100; }
-        .logo { font-size:22px; font-weight:700; color:#28a745; margin-left:10px; font-style:italic; }
-        .menu-icon { font-size: 20px; cursor: pointer; }
-
-        /* Side Navigation */
-        .sidenav { height: 100%; width: 0; position: fixed; z-index: 200; top: 0; left: 0; background-color: #001f3f; overflow-x: hidden; transition: 0.5s; padding-top: 60px; }
-        .sidenav a { padding: 8px 32px; text-decoration: none; font-size: 18px; color: #ccc; display: block; transition: 0.3s; }
-        .sidenav a:hover { color: #f1f1f1; }
-        .sidenav .closebtn { position: absolute; top: 0; right: 25px; font-size: 36px; margin-left: 50px; }
-
-        /* Player & Watermark */
-        #player-container { display:none; background:#000; padding:10px; position:sticky; top:55px; z-index:99; }
-        .video-wrapper { position: relative; width: 100%; height: 230px; border-radius: 8px; overflow: hidden; max-width: 800px; margin: auto; }
-        iframe { width:100%; height:100%; border:none; }
-        .watermark { position: absolute; bottom: 10px; right: 15px; color: rgba(255, 255, 255, 0.4); font-size: 11px; font-weight: bold; pointer-events: none; }
-
-        /* Match Grid */
-        #content-area { padding: 15px; display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 15px; }
-        .card { background:#fff; border-radius:12px; padding:15px; box-shadow:0 4px 12px rgba(0,0,0,0.1); border-top:5px solid #ef5350; position: relative; }
+        :root { --primary: #001f3f; --accent: #28a745; --live: #ef5350; --btn-dark: #2c3e50; --btn-blue: #3498db; --btn-orange: #ff5722; }
+        body { margin:0; font-family:'Poppins',sans-serif; background:#f0f2f5; color: #333; }
         
-        .status-badge { background:#28a745; color:#fff; font-size:9px; padding:2px 6px; border-radius:4px; position:absolute; top:12px; right:12px; animation: blink 1.5s infinite; }
-        @keyframes blink { 0% {opacity:1;} 50% {opacity:0.4;} 100% {opacity:1;} }
+        /* Professional Header */
+        .header { background: var(--primary); color:#fff; padding:12px 15px; display:flex; align-items:center; position:sticky; top:0; z-index:1000; box-shadow: 0 2px 10px rgba(0,0,0,0.3); }
+        .logo { font-size:24px; font-weight:700; color: var(--accent); margin-left:12px; font-style:italic; }
+        .menu-icon { font-size: 22px; cursor: pointer; }
 
-        .series-name { color:#ef5350; font-size:10px; font-weight:700; text-transform:uppercase; }
-        .venue-info { color:#777; font-size:10px; margin-top: 2px; }
+        /* Sidebar Navigation */
+        .sidenav { height: 100%; width: 0; position: fixed; z-index: 2000; top: 0; left: 0; background-color: var(--primary); overflow-x: hidden; transition: 0.4s; padding-top: 60px; box-shadow: 5px 0 15px rgba(0,0,0,0.5); }
+        .sidenav a { padding: 15px 25px; text-decoration: none; font-size: 15px; color: #ccc; display: flex; align-items: center; gap: 15px; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .sidenav a:hover { color: var(--accent); background: rgba(255,255,255,0.1); }
+        .sidenav .closebtn { position: absolute; top: 10px; right: 20px; font-size: 32px; color: #fff; cursor: pointer; }
 
-        /* Team Logos Row */
-        .teams-row { display: flex; align-items: center; justify-content: space-between; margin: 15px 0; text-align: center; }
-        .team-box { flex: 1; }
-        .team-logo { width: 50px; height: 50px; object-fit: contain; margin-bottom: 5px; }
-        .team-name { font-size: 13px; font-weight: 700; color: #333; }
-        .vs { font-weight: 700; color: #ef5350; font-size: 14px; }
+        /* Full Screen Professional Video Player */
+        #player-container { display:none; background:#000; width: 100%; position: relative; z-index: 900; }
+        .video-wrapper { position: relative; width: 100%; padding-top: 56.25%; background: #000; }
+        iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
+        .watermark { position: absolute; bottom: 15px; right: 20px; color: rgba(255, 255, 255, 0.3); font-size: 12px; font-weight: bold; pointer-events: none; text-shadow: 1px 1px 2px #000; }
+        .close-player-btn { background: var(--live); color:#fff; border:none; padding:12px; width: 100%; cursor:pointer; font-weight:700; font-size: 13px; text-transform: uppercase; letter-spacing: 1px; }
 
-        /* Buttons Grid */
-        .btn-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px; margin-top: 10px; }
-        .s-btn { text-decoration:none; color:#fff; text-align:center; padding:8px 2px; border-radius:4px; font-size:10px; font-weight:600; cursor:pointer; text-transform: uppercase; }
-        .b-dark { background:#2c3e50; }
-        .b-blue { background:#3498db; }
-        .b-orange { background:#ff5722; }
+        /* Content Area */
+        #content-area { padding: 15px; display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 15px; }
+        
+        .card { background:#fff; border-radius:12px; padding:15px; box-shadow:0 4px 15px rgba(0,0,0,0.08); border-top:4px solid var(--live); position: relative; }
+        
+        .status-badge { background: var(--accent); color:#fff; font-size:10px; padding:3px 8px; border-radius:4px; position:absolute; top:12px; right:12px; font-weight:bold; animation: blink 1.8s infinite; }
+        @keyframes blink { 0%, 100% {opacity:1;} 50% {opacity:0.5;} }
 
-        .close-btn { background:#ef5350; color:#fff; border:none; padding:6px 12px; border-radius:4px; margin-bottom:10px; cursor:pointer; font-weight:bold; }
+        .series-name { color: var(--live); font-size:11px; font-weight:700; text-transform:uppercase; margin-bottom: 2px; }
+        .venue-info { color:#666; font-size:10px; display: flex; align-items: center; gap: 4px; }
+
+        /* Match Teams Section */
+        .teams-container { display: flex; align-items: center; justify-content: space-around; margin: 15px 0; padding-bottom: 15px; border-bottom: 1px solid #eee; }
+        .team-box { text-align: center; width: 100px; }
+        .team-logo { width: 55px; height: 55px; object-fit: contain; margin-bottom: 8px; }
+        .team-name { font-size: 13px; font-weight: 700; color: #222; }
+        .vs-divider { font-weight: 800; color: var(--live); font-size: 16px; }
+
+        /* Fixed Premium Buttons Grid */
+        .btn-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-top: 15px; }
+        .s-btn { text-decoration:none; color:#fff; text-align:center; padding:10px 2px; border-radius:4px; font-size:10px; font-weight:700; cursor:pointer; text-transform: uppercase; border: none; transition: 0.2s; }
+        .s-btn:active { transform: scale(0.95); }
+        .b-dark { background: var(--btn-dark); }
+        .b-blue { background: var(--btn-blue); }
+        .b-orange { background: var(--btn-orange); }
+        
+        .footer { text-align: center; padding: 25px; font-size: 11px; color: #888; margin-top: 30px; border-top: 1px solid #ddd; }
     </style>
 </head>
 <body>
 
     <div id="mySidenav" class="sidenav">
-      <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+      <span class="closebtn" onclick="closeNav()">&times;</span>
       <a href="#"><i class="fas fa-shield-alt"></i> Privacy Policy</a>
-      <a href="mailto:yourgmail@gmail.com"><i class="fas fa-envelope"></i> Contact Us</a>
-      <a href="#"><i class="fas fa-file-contract"></i> DMCA</a>
-      <a href="YOUR_APP_LINK"><i class="fab fa-android"></i> Download App</a>
+      <a href="mailto:contact@cricwebb.live"><i class="fas fa-envelope"></i> Contact Us</a>
+      <a href="#"><i class="fas fa-file-invoice"></i> DMCA</a>
+      <a href="https://your-app-link.com"><i class="fab fa-android"></i> Download App</a>
     </div>
 
     <div class="header">
@@ -69,14 +75,18 @@
     </div>
     
     <div id="player-container">
-        <button class="close-btn" onclick="closePlayer()">CLOSE PLAYER X</button>
+        <button class="close-player-btn" onclick="closePlayer()"><i class="fas fa-times"></i> CLOSE PLAYER X</button>
         <div class="video-wrapper">
-            <div id="video-box" style="height: 100%;"></div>
+            <div id="video-box"></div>
             <div class="watermark">CricWebb.Live</div>
         </div>
     </div>
 
     <div id="content-area"></div>
+
+    <footer class="footer">
+        © 2026 CricWebb.Live - All Rights Reserved.
+    </footer>
 
     <script>
         const firebaseConfig = {
@@ -91,42 +101,44 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
-        function openNav() { document.getElementById("mySidenav").style.width = "250px"; }
+        function openNav() { document.getElementById("mySidenav").style.width = "260px"; }
         function closeNav() { document.getElementById("mySidenav").style.width = "0"; }
 
         db.ref("matches").on("value", (snap) => {
             const area = document.getElementById('content-area');
             area.innerHTML = "";
+            if(!snap.exists()) return;
+            
             snap.forEach((child) => {
                 const d = child.val();
                 let btns = "";
                 
-                // Server Buttons
-                if(d.link1) btns += `<div onclick="playVideo('${d.link1}')" class="s-btn b-dark">Server 1</div>`;
-                if(d.link2) btns += `<div onclick="playVideo('${d.link2}')" class="s-btn b-dark">Server 2</div>`;
-                if(d.link3) btns += `<div onclick="playVideo('${d.link3}')" class="s-btn b-dark">Server 3</div>`;
-                // Quality Buttons
-                if(d.high) btns += `<div onclick="playVideo('${d.high}')" class="s-btn b-blue">High QH</div>`;
-                if(d.medium) btns += `<div onclick="playVideo('${d.medium}')" class="s-btn b-blue">Med QM</div>`;
-                if(d.low) btns += `<div onclick="playVideo('${d.low}')" class="s-btn b-blue">Low QL</div>`;
-                // Special Buttons
-                if(d.sky) btns += `<div onclick="playVideo('${d.sky}')" class="s-btn b-orange">Sky Sports</div>`;
-                if(d.willow) btns += `<div onclick="playVideo('${d.willow}')" class="s-btn b-orange">Willow</div>`;
+                // Logic to build buttons from Firebase keys
+                if(d.link1) btns += `<button onclick="playVideo('${d.link1}')" class="s-btn b-dark">Server 1</button>`;
+                if(d.link2) btns += `<button onclick="playVideo('${d.link2}')" class="s-btn b-dark">Server 2</button>`;
+                if(d.link3) btns += `<button onclick="playVideo('${d.link3}')" class="s-btn b-dark">Server 3</button>`;
+                
+                if(d.high) btns += `<button onclick="playVideo('${d.high}')" class="s-btn b-blue">High QH</button>`;
+                if(d.medium) btns += `<button onclick="playVideo('${d.medium}')" class="s-btn b-blue">Med QM</button>`;
+                if(d.low) btns += `<button onclick="playVideo('${d.low}')" class="s-btn b-blue">Low QL</button>`;
+                
+                if(d.sky) btns += `<button onclick="playVideo('${d.sky}')" class="s-btn b-orange">Sky Sports</button>`;
+                if(d.willow) btns += `<button onclick="playVideo('${d.willow}')" class="s-btn b-orange">Willow</button>`;
 
                 area.innerHTML += `
                     <div class="card">
                         <span class="status-badge">${d.status || 'LIVE'}</span>
-                        <span class="series-name">${d.series || 'Live Stream'}</span>
-                        <div class="venue-info"><i class="fas fa-map-marker-alt"></i> ${d.venue || 'TBC'}</div>
+                        <span class="series-name">${d.series || 'LIVE MATCH'}</span>
+                        <div class="venue-info"><i class="fas fa-map-marker-alt"></i> ${d.venue || 'Stadium'}</div>
                         
-                        <div class="teams-row">
+                        <div class="teams-container">
                             <div class="team-box">
-                                <img src="${d.logo1 || 'https://via.placeholder.com/50'}" class="team-logo">
+                                <img src="${d.logo1 || 'https://via.placeholder.com/60'}" class="team-logo">
                                 <div class="team-name">${d.team1 || 'Team A'}</div>
                             </div>
-                            <div class="vs">VS</div>
+                            <div class="vs-divider">VS</div>
                             <div class="team-box">
-                                <img src="${d.logo2 || 'https://via.placeholder.com/50'}" class="team-logo">
+                                <img src="${d.logo2 || 'https://via.placeholder.com/60'}" class="team-logo">
                                 <div class="team-name">${d.team2 || 'Team B'}</div>
                             </div>
                         </div>
@@ -140,7 +152,7 @@
             const container = document.getElementById('player-container');
             const box = document.getElementById('video-box');
             container.style.display = "block";
-            box.innerHTML = `<iframe src="${url}" allowfullscreen></iframe>`;
+            box.innerHTML = `<iframe src="${url}" allowfullscreen scrolling="no" allow="autoplay; encrypted-media"></iframe>`;
             window.scrollTo({top: 0, behavior: 'smooth'});
         }
 
