@@ -49,8 +49,8 @@
     <div id="main">
         <div id="content-area"></div>
     </div>
-    <style>
-        /* Sidebar Basic Design */
+</style>
+            /* Sidebar Professional Design */
         .sidebar {
             height: 100%;
             width: 0;
@@ -81,12 +81,13 @@
             display: block;
             transition: 0.3s;
             border-bottom: 1px solid rgba(255,255,255,0.05);
+            font-family: 'Poppins', sans-serif;
         }
 
         .sidebar .menu-items a i {
             margin-right: 15px;
             width: 20px;
-            color: #28a745; /* Green Icons */
+            color: #28a745; /* VIP Green Icons */
         }
 
         .sidebar .menu-items a:hover {
@@ -114,6 +115,7 @@
             position: sticky;
             top: 0;
             z-index: 999;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
         }
 
         .openbtn {
@@ -130,6 +132,7 @@
             font-weight: 700;
             font-style: italic;
             letter-spacing: 1px;
+            color: #ffffff;
         }
 
         .sidebar-footer {
@@ -140,8 +143,7 @@
             color: #888;
             font-size: 12px;
         }
-    </style>
-        /* Match Cards Grid */
+        /* Match Cards Grid Area */
         #content-area {
             padding: 20px;
             max-width: 1200px;
@@ -159,37 +161,39 @@
             background: #ffffff;
             border-radius: 8px;
             border: 1px solid #e1e8ed;
-            padding: 15px;
+            padding: 18px;
             box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-            transition: transform 0.2s, box-shadow 0.2s;
+            transition: transform 0.3s, box-shadow 0.3s;
+            position: relative;
         }
 
         .card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 15px rgba(0,0,0,0.1);
+            transform: translateY(-8px);
+            box-shadow: 0 12px 20px rgba(0,0,0,0.1);
             border-color: #001f3f;
         }
 
         .series-name {
             font-size: 11px;
-            font-weight: 600;
+            font-weight: 700;
             color: #ef5350;
             text-transform: uppercase;
             display: block;
-            margin-bottom: 10px;
+            margin-bottom: 12px;
+            letter-spacing: 0.5px;
         }
 
         .match-info-row {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            margin-bottom: 15px;
+            margin-bottom: 20px;
         }
 
         .match-title {
-            font-size: 16px;
+            font-size: 17px;
             font-weight: 700;
-            color: #333;
+            color: #222;
             flex: 1;
         }
 
@@ -197,33 +201,33 @@
             background-color: #28a745;
             color: white;
             font-size: 10px;
-            padding: 3px 8px;
+            padding: 4px 10px;
             border-radius: 4px;
             font-weight: bold;
-            animation: blink 1.5s infinite;
+            text-transform: uppercase;
+            animation: live-blink 1.5s infinite;
         }
 
-        @keyframes blink {
+        @keyframes live-blink {
             0% { opacity: 1; }
-            50% { opacity: 0.5; }
+            50% { opacity: 0.4; }
             100% { opacity: 1; }
         }
 
-        /* Buttons Section */
+        /* Server Buttons Design */
         .btn-group {
             display: grid;
             grid-template-columns: 1fr 1fr 1fr;
-            gap: 5px;
-            margin-top: 10px;
+            gap: 8px;
         }
 
         .stream-btn {
             text-decoration: none;
             font-size: 12px;
             font-weight: 600;
-            padding: 10px 5px;
+            padding: 10px 2px;
             text-align: center;
-            border-radius: 4px;
+            border-radius: 5px;
             color: white;
             transition: 0.3s;
             text-transform: uppercase;
@@ -235,10 +239,9 @@
 
         .stream-btn:hover {
             filter: brightness(1.2);
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
         }
-    </style>
-    <div id="legal-templates" style="display: none;">
+    </style> <div id="legal-templates" style="display: none;">
         
         <div id="privacy-text">
             <h2 style="color: #001f3f;">Privacy Policy</h2>
@@ -260,23 +263,25 @@
         </div>
 
     </div>
-    <div id="download-template" style="display: none;">
-        <div style="text-align: center; padding: 40px 20px; background: #fff; border-radius: 12px; box-shadow: 0 5px 15px rgba(0,0,0,0.1);">
-            <div style="font-size: 50px; color: #28a745; margin-bottom: 20px;">
-                <i class="fas fa-mobile-alt"></i>
+        <div id="download-template" style="display: none;">
+            <div style="text-align: center; padding: 40px 20px; background: #fff; border-radius: 12px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); margin: 20px;">
+                <div style="font-size: 60px; color: #28a745; margin-bottom: 20px;">
+                    <i class="fas fa-mobile-alt"></i>
+                </div>
+                <h2 style="color: #001f3f; margin-bottom: 10px;">CricWebb Official App</h2>
+                <p style="color: #666; margin-bottom: 30px; line-height: 1.6;">Get the fastest live scores, buffer-free streaming, and instant match notifications directly on your phone.</p>
+                
+                <a href="https://86xf0kqg.r.ap-southeast-1.awstrack.me/L0/https:%2F%2Fapkpure.com%2Fp%2Fcricket.live140/1/010e019e1b8c48ef-fd22c8df-a8a1-4e13-a49c-1e6f5309aa57-000000/Ed3e-mhUvTvLeHXm2onLCXQQt1o=258" 
+                   target="_blank" 
+                   style="display: inline-block; background: linear-gradient(135deg, #28a745 0%, #218838 100%); color: white; padding: 18px 40px; border-radius: 50px; text-decoration: none; font-weight: bold; font-size: 18px; box-shadow: 0 4px 15px rgba(40, 167, 69, 0.4); transition: 0.3s; text-transform: uppercase;">
+                    <i class="fab fa-android"></i> Download for Android
+                </a>
+                
+                <div style="margin-top: 25px; font-size: 13px; color: #999;">
+                    <i class="fas fa-shield-alt"></i> Safe & Secure via APKPure
+                </div>
             </div>
-            <h2 style="color: #001f3f; margin-bottom: 10px;">Download CricWebb Official App</h2>
-            <p style="color: #666; margin-bottom: 30px;">Get the best live cricket experience, faster notifications, and data-saving features directly on your Android device.</p>
-            
-            <a href="https://86xf0kqg.r.ap-southeast-1.awstrack.me/L0/https:%2F%2Fapkpure.com%2Fp%2Fcricket.live140/1/010e019e1b8c48ef-fd22c8df-a8a1-4e13-a49c-1e6f5309aa57-000000/Ed3e-mhUvTvLeHXm2onLCXQQt1o=258" 
-               target="_blank" 
-               style="display: inline-block; background: linear-gradient(135deg, #28a745 0%, #218838 100%); color: white; padding: 15px 35px; border-radius: 50px; text-decoration: none; font-weight: bold; font-size: 18px; box-shadow: 0 4px 15px rgba(40, 167, 69, 0.4); transition: 0.3s;">
-                <i class="fab fa-android"></i> DOWNLOAD NOW
-            </a>
-            
-            <p style="margin-top: 25px; font-size: 12px; color: #999;">Safe & Secure APK via APKPure</p>
         </div>
-    </div>
     <script>
         // Aapka specific Firebase Config
         const firebaseConfig = {
@@ -304,57 +309,68 @@
         }
     </script>
     <div id="player-template" style="display: none;">
-        <div class="player-container" style="background: #000; border-radius: 8px; overflow: hidden; position: relative;">
+        <div class="player-container" style="background: #000; border-radius: 8px; overflow: hidden; position: relative; margin: 10px;">
             
-            <div class="ad-label" style="color: #666; font-size: 10px; text-align: center; padding: 5px;">ADVERTISEMENT</div>
-            <div id="top-ad" style="width: 100%; height: 60px; background: #111; margin-bottom: 5px; display: flex; align-items: center; justify-content: center; color: #444; font-size: 12px; border: 1px dashed #333;">
-                Ads Space (Top)
+            <div id="top-ad" style="width: 100%; min-height: 50px; background: #111; display: flex; align-items: center; justify-content: center; color: #444; font-size: 11px; border-bottom: 1px solid #222;">
+                ADVERTISEMENT AREA
             </div>
 
             <div class="video-wrapper" style="position: relative; padding-bottom: 56.25%; height: 0; background: #000;">
                 <iframe id="main-player" src="" 
                     style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;" 
-                    frameborder="0" allow="autoplay; encrypted-media; fullscreen; picture-in-picture" allowfullscreen>
+                    frameborder="0" allow="autoplay; encrypted-media; fullscreen" allowfullscreen>
                 </iframe>
             </div>
 
-            <div class="player-controls" style="background: #0a1118; padding: 15px; display: flex; justify-content: space-between; align-items: center; color: white;">
+            <div style="background: #0a1118; padding: 15px; display: flex; justify-content: space-between; align-items: center; color: white;">
                 <div class="left-ctrl">
-                    <span id="playing-title" style="font-weight: 600; font-size: 14px; color: #28a745;">Live Stream</span>
+                    <span id="playing-title" style="font-weight: 600; font-size: 14px; color: #28a745;">
+                        <i class="fas fa-circle" style="font-size: 8px; vertical-align: middle; margin-right: 5px; animation: live-blink 1s infinite;"></i> 
+                        Connecting Stream...
+                    </span>
                 </div>
-                <div class="right-ctrl" style="display: flex; gap: 15px;">
-                    <i class="material-icons" title="Cast to TV" style="cursor: pointer; font-size: 20px;">cast</i>
-                    <i class="material-icons" title="Rotate Screen" style="cursor: pointer; font-size: 20px;">screen_rotation</i>
-                    <i class="material-icons" title="Volume" style="cursor: pointer; font-size: 20px;">volume_up</i>
+                <div class="right-ctrl" style="display: flex; gap: 20px;">
+                    <i class="material-icons" title="Cast to TV" style="cursor: pointer; font-size: 22px; color: #d1d1d1;">cast</i>
+                    <i class="material-icons" title="Rotate Screen" style="cursor: pointer; font-size: 22px; color: #d1d1d1;">screen_rotation</i>
+                    <i class="material-icons" title="Volume" style="cursor: pointer; font-size: 22px; color: #d1d1d1;">volume_up</i>
                 </div>
             </div>
 
-            <div id="bottom-ad" style="width: 100%; height: 90px; background: #111; margin-top: 10px; display: flex; align-items: center; justify-content: center; color: #444; font-size: 12px; border: 1px dashed #333;">
-                Ads Space (Bottom)
+            <div id="bottom-ad" style="width: 100%; min-height: 90px; background: #111; display: flex; align-items: center; justify-content: center; color: #444; font-size: 11px; border-top: 1px solid #222;">
+                ADVERTISEMENT AREA (Responsive)
             </div>
         </div>
         
-        <button onclick="showHome()" style="margin-top: 15px; background: #001f3f; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer;">
-            <i class="fa fa-arrow-left"></i> Back to Schedule
-        </button>
+        <div style="padding: 10px 20px;">
+            <button onclick="showHome()" style="background: #001f3f; color: white; border: none; padding: 12px 25px; border-radius: 5px; cursor: pointer; font-weight: 600; display: flex; align-items: center; gap: 10px;">
+                <i class="fas fa-arrow-left"></i> Back to Live Schedule
+            </button>
+        </div>
     </div>
     <script>
         const contentArea = document.getElementById('content-area');
 
-        // 1. Matches Load Karne Ka Function (Firebase)
+        // 1. Home Function: Firebase se matches load karna
         function showHome() {
             closeNav();
-            contentArea.innerHTML = '<div class="match-grid" id="match-container"><p style="text-align:center;">Loading Live Matches...</p></div>';
+            contentArea.innerHTML = '<div class="match-grid" id="match-container"><p style="text-align:center; padding:20px; color:#666;">Scanning for Live Matches...</p></div>';
             
             db.ref("matches").on("value", (snapshot) => {
                 const container = document.getElementById('match-container');
-                container.innerHTML = ""; // Clear loader
+                if (!container) return;
                 
+                container.innerHTML = ""; // Loader hatayen
+                
+                if (!snapshot.exists()) {
+                    container.innerHTML = '<p style="text-align:center; grid-column: 1/-1; padding:50px; color:#999;">No Live Matches Available Right Now.</p>';
+                    return;
+                }
+
                 snapshot.forEach((childSnapshot) => {
                     const data = childSnapshot.val();
                     const card = `
                         <div class="card">
-                            <span class="series-name">${data.series || 'International Cricket'}</span>
+                            <span class="series-name">${data.series || 'Live Event'}</span>
                             <div class="match-info-row">
                                 <span class="match-title">${data.team1} vs ${data.team2}</span>
                                 <span class="live-badge">LIVE</span>
@@ -370,34 +386,36 @@
             });
         }
 
-        // 2. Player Chalanay Ka Function
+        // 2. Player Function: Video chalane ke liye
         function playVideo(url, title) {
+            if(!url || url === "undefined") {
+                alert("Stream not available yet. Try another server!");
+                return;
+            }
             const playerTemplate = document.getElementById('player-template').innerHTML;
             contentArea.innerHTML = playerTemplate;
             document.getElementById('main-player').src = url;
-            document.getElementById('playing-title').innerText = "Streaming: " + title;
+            document.getElementById('playing-title').innerHTML = `<i class="fas fa-circle" style="font-size: 8px; vertical-align: middle; margin-right: 5px; animation: live-blink 1s infinite;"></i> Playing: ${title}`;
             window.scrollTo(0, 0);
         }
 
-        // 3. Privacy Policy Show Karna
+        // 3. Navigation Functions
         function showPrivacy() {
             closeNav();
             contentArea.innerHTML = document.getElementById('privacy-text').innerHTML;
         }
 
-        // 4. Contact Us Show Karna
         function showContact() {
             closeNav();
             contentArea.innerHTML = document.getElementById('contact-text').innerHTML;
         }
 
-        // 5. Download App Show Karna
         function showDownload() {
             closeNav();
             contentArea.innerHTML = document.getElementById('download-template').innerHTML;
         }
 
-        // Site khulne par pehle Home load ho
+        // Auto-load Home on Startup
         window.onload = showHome;
     </script>
 </body>
