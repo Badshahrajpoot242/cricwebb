@@ -3,52 +3,61 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CricWebb - Grid Layout</title>
+    <title>CricWebb - Watermark Player</title>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
-        body { margin:0; font-family:'Poppins',sans-serif; background:#f0f2f5; color:#333; }
-        .header { background:#001f3f; color:#fff; padding:15px; display:flex; align-items:center; position:sticky; top:0; z-index:100; box-shadow:0 2px 10px rgba(0,0,0,0.3); }
-        .logo { font-size:24px; font-weight:700; font-style:italic; color:#28a745; margin-left:10px; }
+        body { margin:0; font-family:'Poppins',sans-serif; background:#f0f2f5; }
+        .header { background:#001f3f; color:#fff; padding:15px; display:flex; align-items:center; position:sticky; top:0; z-index:100; }
+        .logo { font-size:24px; font-weight:700; color:#28a745; margin-left:10px; }
         
-        /* Grid System for Desktop/Mobile */
+        /* Player & Watermark Styling */
+        #player-container { display:none; background:#000; padding:10px; position:sticky; top:60px; z-index:99; box-shadow:0 5px 15px rgba(0,0,0,0.5); }
+        .video-wrapper { position: relative; width: 100%; height: 250px; border-radius: 8px; overflow: hidden; }
+        iframe { width:100%; height:100%; border:none; }
+        
+        /* Chota Watermark Text */
+        .watermark { 
+            position: absolute; 
+            bottom: 10px; 
+            right: 15px; 
+            color: rgba(255, 255, 255, 0.4); /* Halka white color */
+            font-size: 12px; 
+            font-weight: bold; 
+            pointer-events: none; /* Taake koi click kare to video na ruke */
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+            z-index: 10;
+        }
+
+        .close-btn { background:#ef5350; color:#fff; border:none; padding:5px 15px; border-radius:4px; margin-bottom:10px; cursor:pointer; font-weight:bold; }
+
         #content-area { 
             padding: 20px; 
-            max-width: 1250px; 
-            margin: auto; 
             display: grid; 
-            /* Desktop par left-right dikhane ke liye auto-fill layout */
             grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); 
             gap: 20px; 
         }
 
-        .card { background:#fff; border-radius:12px; padding:15px; box-shadow:0 4px 15px rgba(0,0,0,0.1); border-top:5px solid #ef5350; position:relative; display: flex; flex-direction: column; justify-content: space-between; }
-        .series { color:#ef5350; font-size:11px; font-weight:700; text-transform:uppercase; display:block; margin-bottom:5px; }
-        .venue { color:#666; font-size:10px; margin-bottom:10px; display:block; font-style:italic; }
-        .match-title { font-size:16px; font-weight:700; color:#1a1a1a; margin-bottom:15px; line-height:1.2; }
-        .live-badge { background:#28a745; color:#fff; font-size:9px; padding:2px 6px; border-radius:4px; position:absolute; top:15px; right:15px; animation:blink 1.5s infinite; }
-        
-        @keyframes blink { 0% {opacity:1;} 50% {opacity:0.4;} 100% {opacity:1;} }
-
-        .btn-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px; margin-top: 10px; }
-        .s-btn { text-decoration:none; color:#fff; text-align:center; padding:8px 2px; border-radius:4px; font-size:10px; font-weight:600; text-transform:uppercase; transition: 0.2s; }
-        
-        .b-default { background:#2c3e50; } 
-        .b-quality { background:#3498db; } 
+        .card { background:#fff; border-radius:12px; padding:15px; box-shadow:0 4px 15px rgba(0,0,0,0.1); border-top:5px solid #ef5350; position: relative; }
+        .match-title { font-size:16px; font-weight:700; margin:10px 0; }
+        .btn-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px; }
+        .s-btn { text-decoration:none; color:#fff; text-align:center; padding:8px 2px; border-radius:4px; font-size:10px; font-weight:600; background:#2c3e50; cursor:pointer; }
         .b-special { background:#ff5722; }
-
-        .logo-container { display: flex; gap: 10px; justify-content: flex-end; margin-top: 15px;}
-        .logo-img { height: 25px; width: auto; object-fit: contain; }
-
-        .player-box { background:#000; border-radius:10px; overflow:hidden; }
-        iframe { width:100%; height:300px; border:none; display: block; }
-        .back-btn { margin-top:15px; padding:12px; width:100%; background:#001f3f; color:#fff; border:none; border-radius:8px; font-weight:bold; cursor:pointer; }
     </style>
 </head>
 <body>
     <div class="header"><i class="fas fa-bars"></i> <span class="logo">CricWebb</span></div>
+    
+    <div id="player-container">
+        <button class="close-btn" onclick="closePlayer()">CLOSE PLAYER X</button>
+        <div class="video-wrapper">
+            <div id="video-box" style="height: 100%;"></div>
+            <div class="watermark">CricWebb.Live</div>
+        </div>
+    </div>
+
     <div id="content-area"></div>
 
     <script>
@@ -64,59 +73,36 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
-        function loadHome() {
+        db.ref("matches").on("value", (snap) => {
             const area = document.getElementById('content-area');
-            area.innerHTML = '<p style="grid-column: 1 / -1; text-align:center;">Loading Grid...</p>';
-            
-            db.ref("matches").on("value", (snap) => {
-                area.innerHTML = "";
-                snap.forEach((child) => {
-                    const d = child.val();
-                    let buttonsHTML = "";
-                    let logosHTML = "";
-
-                    const btnList = [
-                        { key: 'link1', label: 'Server 1', cls: 'b-default' },
-                        { key: 'link2', label: 'Server 2', cls: 'b-default' },
-                        { key: 'link3', label: 'Server 3', cls: 'b-default' },
-                        { key: 'high', label: 'High', cls: 'b-quality' },
-                        { key: 'medium', label: 'Medium', cls: 'b-quality' },
-                        { key: 'low', label: 'Low', cls: 'b-quality' },
-                        { key: 'sky', label: 'Sky', cls: 'b-special' },
-                        { key: 'willow', label: 'Willow', cls: 'b-special' }
-                    ];
-
-                    btnList.forEach(btn => {
-                        if(d[btn.key]) {
-                            buttonsHTML += `<a href="javascript:void(0)" onclick="play('${d[btn.key]}')" class="s-btn ${btn.cls}">${btn.label}</a>`;
-                        }
-                    });
-
-                    if(d.logo1) { logosHTML += `<img src="${d.logo1}" class="logo-img">`; }
-                    if(d.logo2) { logosHTML += `<img src="${d.logo2}" class="logo-img">`; }
-
-                    area.innerHTML += `
-                        <div class="card">
-                            <span class="live-badge">LIVE</span>
-                            <span class="series">${d.series || 'LIVE EVENT'}</span>
-                            <span class="venue"><i class="fas fa-map-marker-alt"></i> ${d.venue || 'Stadium'}</span>
-                            <div class="match-title">${d.team1} vs ${d.team2}</div>
-                            <div class="btn-grid">${buttonsHTML}</div>
-                            ${logosHTML ? `<div class="logo-container">${logosHTML}</div>` : ''}
-                        </div>`;
-                });
+            area.innerHTML = "";
+            snap.forEach((child) => {
+                const d = child.val();
+                area.innerHTML += `
+                    <div class="card">
+                        <span style="color:#ef5350; font-size:10px; font-weight:bold;">${d.series || 'LIVE'}</span>
+                        <div class="match-title">${d.team1} vs ${d.team2}</div>
+                        <div class="btn-grid">
+                            ${d.link1 ? `<div onclick="playVideo('${d.link1}')" class="s-btn">Server 1</div>` : ''}
+                            ${d.link2 ? `<div onclick="playVideo('${d.link2}')" class="s-btn">Server 2</div>` : ''}
+                            ${d.link3 ? `<div onclick="playVideo('${d.link3}')" class="s-btn">Server 3</div>` : ''}
+                        </div>
+                    </div>`;
             });
+        });
+
+        function playVideo(url) {
+            const container = document.getElementById('player-container');
+            const box = document.getElementById('video-box');
+            container.style.display = "block";
+            box.innerHTML = `<iframe src="${url}" allowfullscreen></iframe>`;
+            window.scrollTo({top: 0, behavior: 'smooth'});
         }
 
-        function play(url) {
-            // Player mode mein grid khatam kar dete hain taake screen saaf ho
-            const area = document.getElementById('content-area');
-            area.style.display = "block"; 
-            area.innerHTML = `
-                <div class="player-box"><iframe src="${url}" allowfullscreen></iframe></div>
-                <button onclick="window.location.reload()" class="back-btn"><i class="fas fa-arrow-left"></i> BACK TO LIST</button>`;
+        function closePlayer() {
+            document.getElementById('player-container').style.display = "none";
+            document.getElementById('video-box').innerHTML = "";
         }
-        window.onload = loadHome;
     </script>
 </body>
 </html>
