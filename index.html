@@ -15,7 +15,7 @@
         #content-area { padding:15px; max-width: 800px; margin: auto; }
         
         /* Card Design */
-        .card { background:#fff; border-radius:12px; padding:15px; margin-bottom:20px; box-shadow:0 4px 15px rgba(0,0,0,0.1); border-top:5px solid #ef5350; position:relative; }
+        .card { background:#fff; border-radius:12px; padding:15px; margin-bottom:20px; box-shadow:0 4px 15px rgba(0,0,0,0.1); border-top:5px solid #ef5350; position:relative; display: flex; flex-direction: column;}
         .series { color:#ef5350; font-size:11px; font-weight:700; text-transform:uppercase; display:block; margin-bottom:5px; }
         .venue { color:#666; font-size:10px; margin-bottom:10px; display:block; font-style:italic; }
         .match-title { font-size:18px; font-weight:700; color:#1a1a1a; margin-bottom:15px; line-height:1.2; }
@@ -24,15 +24,18 @@
         @keyframes blink { 0% {opacity:1;} 50% {opacity:0.4;} 100% {opacity:1;} }
 
         /* Buttons Grid */
-        .btn-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 8px; margin-top: 10px; }
-        .s-btn { text-decoration:none; color:#fff; text-align:center; padding:8px 2px; border-radius:6px; font-size:11px; font-weight:600; text-transform:uppercase; transition: 0.2s; }
+        .btn-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 8px; margin-top: 10px; flex-grow: 1;}
+        .s-btn { text-decoration:none; color:#fff; text-align:center; padding:8px 2px; border-radius:6px; font-size:11px; font-weight:600; text-transform:uppercase; transition: 0.2s; display: flex; align-items: center; justify-content: center;}
         .s-btn:active { transform: scale(0.95); }
         
         /* Colors for different buttons */
         .b-default { background:#2c3e50; } /* Server 1,2,3 */
         .b-quality { background:#3498db; } /* High, Med, Low */
         .b-special { background:#ff5722; } /* Sky, Willow */
-        .b-logo { background:#6c5ce7; }    /* Logo 1, 2 */
+
+        /* Logo Images Styling */
+        .logo-container { display: flex; gap: 10px; justify-content: flex-end; margin-top: 15px;}
+        .logo-img { height: 30px; width: auto; border-radius: 4px; object-fit: contain; }
 
         .player-box { background:#000; border-radius:10px; overflow:hidden; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
         iframe { width:100%; height:250px; border:none; display: block; }
@@ -67,8 +70,9 @@
                 snap.forEach((child) => {
                     const d = child.val();
                     let buttonsHTML = "";
+                    let logosHTML = "";
 
-                    // List of all possible buttons
+                    // List of all streaming buttons
                     const btnList = [
                         { key: 'link1', label: 'Server 1', cls: 'b-default' },
                         { key: 'link2', label: 'Server 2', cls: 'b-default' },
@@ -77,9 +81,7 @@
                         { key: 'medium', label: 'Med QM', cls: 'b-quality' },
                         { key: 'low', label: 'Low QL', cls: 'b-quality' },
                         { key: 'sky', label: 'Sky Sports', cls: 'b-special' },
-                        { key: 'willow', label: 'Willow', cls: 'b-special' },
-                        { key: 'logo1', label: 'Logo 1', cls: 'b-logo' },
-                        { key: 'logo2', label: 'Logo 2', cls: 'b-logo' }
+                        { key: 'willow', label: 'Willow', cls: 'b-special' }
                     ];
 
                     btnList.forEach(btn => {
@@ -88,6 +90,10 @@
                         }
                     });
 
+                    // Add logo images if they exist
+                    if(d.logo1) { logosHTML += `<img src="${d.logo1}" class="logo-img" alt="Logo 1">`; }
+                    if(d.logo2) { logosHTML += `<img src="${d.logo2}" class="logo-img" alt="Logo 2">`; }
+
                     area.innerHTML += `
                         <div class="card">
                             <span class="live-badge">LIVE</span>
@@ -95,6 +101,7 @@
                             <span class="venue"><i class="fas fa-map-marker-alt"></i> ${d.venue || 'International Stadium'}</span>
                             <div class="match-title">${d.team1} vs ${d.team2}</div>
                             <div class="btn-grid">${buttonsHTML}</div>
+                            ${logosHTML ? `<div class="logo-container">${logosHTML}</div>` : ''}
                         </div>`;
                 });
             });
