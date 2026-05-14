@@ -2,42 +2,65 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>CricWebb - Live Cricket Streaming</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CricWebb - Live Sports</title>
     
-    <meta name="description" content="Watch Live Cricket Streaming on CricWebb. Best quality servers for PTV Sports and International Cricket.">
-    <meta name="theme-color" content="#001f3f">
-
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
-
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+
     <style>
-        /* Part 4 mein hum detail CSS likhenge, abhi sirf basic layout set kar rahe hain */
+        /* 1. Global Styles */
         body { margin: 0; padding: 0; font-family: 'Poppins', sans-serif; background-color: #f4f7f6; overflow-x: hidden; }
         #main-content { transition: margin-left .3s; padding: 0; }
+
+        /* 2. Sidebar Design */
+        .sidebar { height: 100%; width: 0; position: fixed; z-index: 1000; top: 0; left: 0; background-color: #001f3f; overflow-x: hidden; transition: 0.5s; padding-top: 60px; box-shadow: 2px 0 15px rgba(0,0,0,0.5); }
+        .sidebar .menu-items a { padding: 15px 25px; text-decoration: none; font-size: 16px; color: #d1d1d1; display: block; transition: 0.3s; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .sidebar .menu-items a:hover { background-color: #003366; color: #ffffff; padding-left: 35px; }
+        .sidebar .closebtn { position: absolute; top: 15px; right: 25px; font-size: 36px; color: #fff; text-decoration: none; }
+        .sidebar .menu-items a i { margin-right: 15px; width: 20px; color: #28a745; }
+
+        /* 3. Header Design */
+        .header { background-color: #001f3f; color: white; padding: 12px 15px; display: flex; align-items: center; position: sticky; top: 0; z-index: 999; box-shadow: 0 2px 10px rgba(0,0,0,0.2); }
+        .openbtn { font-size: 22px; cursor: pointer; background-color: transparent; color: white; border: none; margin-right: 15px; }
+        .logo-text { font-size: 22px; font-weight: 700; font-style: italic; color: #ffffff; }
+
+        /* 4. Match Cards Design */
+        #content-area { padding: 20px; max-width: 1200px; margin: 0 auto; }
+        .match-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 20px; }
+        .card { background: #ffffff; border-radius: 8px; border: 1px solid #e1e8ed; padding: 18px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); transition: 0.3s; }
+        .card:hover { transform: translateY(-5px); box-shadow: 0 8px 15px rgba(0,0,0,0.1); }
+        .series-name { font-size: 11px; font-weight: 700; color: #ef5350; text-transform: uppercase; margin-bottom: 10px; display: block; }
+        .match-info-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 15px; }
+        .match-title { font-size: 16px; font-weight: 700; color: #333; }
+        .live-badge { background-color: #28a745; color: white; font-size: 10px; padding: 3px 8px; border-radius: 4px; animation: blink 1.5s infinite; }
+        @keyframes blink { 0% {opacity:1;} 50% {opacity:0.5;} 100% {opacity:1;} }
+
+        /* 5. Buttons Design */
+        .btn-group { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
+        .stream-btn { text-decoration: none; font-size: 12px; font-weight: 600; padding: 10px 2px; text-align: center; border-radius: 4px; color: white; text-transform: uppercase; }
+        .btn-dark { background-color: #2c3e50; }
+        .btn-blue { background-color: #3498db; }
+        .btn-orange { background-color: #ff5722; }
+
+        /* 6. VIP Player Design */
+        .player-container { background: #000; border-radius: 8px; overflow: hidden; margin-bottom: 20px; }
+        .video-wrapper { position: relative; padding-bottom: 56.25%; height: 0; background: #000; }
+        .video-wrapper iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
     </style>
 </head>
 <body>
 
     <div id="mySidebar" class="sidebar">
-        <div class="sidebar-header">
-            <img src="https://via.placeholder.com/100x40?text=CricWebb" alt="Logo">
-            <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
-        </div>
-        
+        <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
         <div class="menu-items">
             <a href="#" onclick="showHome()"><i class="fa fa-home"></i> Home</a>
             <a href="#" onclick="showPrivacy()"><i class="fa fa-shield-alt"></i> Privacy Policy</a>
             <a href="#" onclick="showContact()"><i class="fa fa-envelope"></i> Contact Us</a>
             <a href="#" onclick="showDownload()"><i class="fa fa-download"></i> Download App</a>
-        </div>
-
-        <div class="sidebar-footer">
-            <p>&copy; 2026 CricWebb Professional</p>
         </div>
     </div>
 
@@ -47,243 +70,38 @@
     </div>
 
     <div id="main">
-        <div id="content-area"></div>
+        <div id="content-area">
+            </div>
     </div>
-</style>
-            /* Sidebar Professional Design */
-        .sidebar {
-            height: 100%;
-            width: 0;
-            position: fixed;
-            z-index: 1000;
-            top: 0;
-            left: 0;
-            background-color: #001f3f; /* Premium Dark Blue */
-            overflow-x: hidden;
-            transition: 0.5s;
-            padding-top: 60px;
-            box-shadow: 2px 0 15px rgba(0,0,0,0.5);
-        }
 
-        .sidebar-header {
-            padding: 0 25px;
-            margin-bottom: 30px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .sidebar .menu-items a {
-            padding: 15px 25px;
-            text-decoration: none;
-            font-size: 16px;
-            color: #d1d1d1;
-            display: block;
-            transition: 0.3s;
-            border-bottom: 1px solid rgba(255,255,255,0.05);
-            font-family: 'Poppins', sans-serif;
-        }
-
-        .sidebar .menu-items a i {
-            margin-right: 15px;
-            width: 20px;
-            color: #28a745; /* VIP Green Icons */
-        }
-
-        .sidebar .menu-items a:hover {
-            background-color: #003366;
-            color: #ffffff;
-            padding-left: 35px;
-        }
-
-        .sidebar .closebtn {
-            position: absolute;
-            top: 15px;
-            right: 25px;
-            font-size: 36px;
-            color: #fff;
-            text-decoration: none;
-        }
-
-        /* Top Header Design */
-        .header {
-            background-color: #001f3f;
-            color: white;
-            padding: 12px 15px;
-            display: flex;
-            align-items: center;
-            position: sticky;
-            top: 0;
-            z-index: 999;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
-        }
-
-        .openbtn {
-            font-size: 22px;
-            cursor: pointer;
-            background-color: transparent;
-            color: white;
-            border: none;
-            margin-right: 15px;
-        }
-
-        .logo-text {
-            font-size: 22px;
-            font-weight: 700;
-            font-style: italic;
-            letter-spacing: 1px;
-            color: #ffffff;
-        }
-
-        .sidebar-footer {
-            position: absolute;
-            bottom: 20px;
-            width: 100%;
-            text-align: center;
-            color: #888;
-            font-size: 12px;
-        }
-        /* Match Cards Grid Area */
-        #content-area {
-            padding: 20px;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        .match-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
-            gap: 20px;
-        }
-
-        /* Card Professional Design */
-        .card {
-            background: #ffffff;
-            border-radius: 8px;
-            border: 1px solid #e1e8ed;
-            padding: 18px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-            transition: transform 0.3s, box-shadow 0.3s;
-            position: relative;
-        }
-
-        .card:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 12px 20px rgba(0,0,0,0.1);
-            border-color: #001f3f;
-        }
-
-        .series-name {
-            font-size: 11px;
-            font-weight: 700;
-            color: #ef5350;
-            text-transform: uppercase;
-            display: block;
-            margin-bottom: 12px;
-            letter-spacing: 0.5px;
-        }
-
-        .match-info-row {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 20px;
-        }
-
-        .match-title {
-            font-size: 17px;
-            font-weight: 700;
-            color: #222;
-            flex: 1;
-        }
-
-        .live-badge {
-            background-color: #28a745;
-            color: white;
-            font-size: 10px;
-            padding: 4px 10px;
-            border-radius: 4px;
-            font-weight: bold;
-            text-transform: uppercase;
-            animation: live-blink 1.5s infinite;
-        }
-
-        @keyframes live-blink {
-            0% { opacity: 1; }
-            50% { opacity: 0.4; }
-            100% { opacity: 1; }
-        }
-
-        /* Server Buttons Design */
-        .btn-group {
-            display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
-            gap: 8px;
-        }
-
-        .stream-btn {
-            text-decoration: none;
-            font-size: 12px;
-            font-weight: 600;
-            padding: 10px 2px;
-            text-align: center;
-            border-radius: 5px;
-            color: white;
-            transition: 0.3s;
-            text-transform: uppercase;
-        }
-
-        .btn-dark { background-color: #2c3e50; }
-        .btn-blue { background-color: #3498db; }
-        .btn-orange { background-color: #ff5722; }
-
-        .stream-btn:hover {
-            filter: brightness(1.2);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
-        }
-    </style> <div id="legal-templates" style="display: none;">
-        
+    <div id="templates" style="display: none;">
         <div id="privacy-text">
-            <h2 style="color: #001f3f;">Privacy Policy</h2>
-            <p>Welcome to CricWebb. We value your privacy. This policy explains how we treat your information.</p>
-            <p><b>1. Information Collection:</b> We do not collect any personal data from our users unless voluntarily provided via email.</p>
-            <p><b>2. Cookies:</b> We may use cookies to enhance user experience and analyze site traffic for better streaming performance.</p>
-            <p><b>3. Third-Party Links:</b> Our site contains links to external servers. We are not responsible for the content or practices of these third-party sites.</p>
-            <p><b>4. Contact:</b> If you have questions about this policy, contact us at the official email provided in the Contact section.</p>
+            <h2>Privacy Policy</h2>
+            <p>We respect your privacy. We don't collect personal data. Cookies are used for performance only.</p>
         </div>
-
         <div id="contact-text">
-            <h2 style="color: #001f3f;">Contact Us</h2>
-            <p>Have any queries, business proposals, or copyright concerns? Feel free to reach out to our dedicated team.</p>
-            <div style="background: #f4f7f6; padding: 20px; border-left: 5px solid #28a745; margin-top: 15px;">
-                <p style="margin: 0; font-weight: 600;">Official Support Email:</p>
-                <a href="mailto:sultanprince025@gmail.com" style="color: #3498db; font-size: 18px; text-decoration: none;">sultanprince025@gmail.com</a>
-            </div>
-            <p style="margin-top: 20px; font-size: 13px; color: #666;">We usually respond within 24-48 hours.</p>
+            <h2>Contact Us</h2>
+            <p>Email: sultanprince025@gmail.com</p>
         </div>
-
+        <div id="download-template">
+            <div style="text-align:center; padding:40px;">
+                <i class="fas fa-mobile-alt" style="font-size:50px; color:#28a745;"></i>
+                <h2>CricWebb App</h2>
+                <a href="https://apkpure.com" class="stream-btn btn-blue" style="padding:15px 30px;">Download Now</a>
+            </div>
+        </div>
+        <div id="player-template">
+            <div class="player-container">
+                <div class="video-wrapper">
+                    <iframe id="main-player" src="" frameborder="0" allowfullscreen></iframe>
+                </div>
+            </div>
+            <button onclick="showHome()" class="stream-btn btn-dark" style="padding:10px 20px;">Back to Home</button>
+        </div>
     </div>
-        <div id="download-template" style="display: none;">
-            <div style="text-align: center; padding: 40px 20px; background: #fff; border-radius: 12px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); margin: 20px;">
-                <div style="font-size: 60px; color: #28a745; margin-bottom: 20px;">
-                    <i class="fas fa-mobile-alt"></i>
-                </div>
-                <h2 style="color: #001f3f; margin-bottom: 10px;">CricWebb Official App</h2>
-                <p style="color: #666; margin-bottom: 30px; line-height: 1.6;">Get the fastest live scores, buffer-free streaming, and instant match notifications directly on your phone.</p>
-                
-                <a href="https://86xf0kqg.r.ap-southeast-1.awstrack.me/L0/https:%2F%2Fapkpure.com%2Fp%2Fcricket.live140/1/010e019e1b8c48ef-fd22c8df-a8a1-4e13-a49c-1e6f5309aa57-000000/Ed3e-mhUvTvLeHXm2onLCXQQt1o=258" 
-                   target="_blank" 
-                   style="display: inline-block; background: linear-gradient(135deg, #28a745 0%, #218838 100%); color: white; padding: 18px 40px; border-radius: 50px; text-decoration: none; font-weight: bold; font-size: 18px; box-shadow: 0 4px 15px rgba(40, 167, 69, 0.4); transition: 0.3s; text-transform: uppercase;">
-                    <i class="fab fa-android"></i> Download for Android
-                </a>
-                
-                <div style="margin-top: 25px; font-size: 13px; color: #999;">
-                    <i class="fas fa-shield-alt"></i> Safe & Secure via APKPure
-                </div>
-            </div>
-        </div>
+
     <script>
-        // Aapka specific Firebase Config
+        // Firebase Config
         const firebaseConfig = {
             apiKey: "AIzaSyCEg2IJax96IMMsREqEX85_zHRkVqFLcN0",
             authDomain: "cricwebb.firebaseapp.com",
@@ -291,131 +109,52 @@
             projectId: "cricwebb",
             storageBucket: "cricwebb.firebasestorage.app",
             messagingSenderId: "931715470347",
-            appId: "1:931715470347:web:68bf78f3f7abde18cbe30e",
-            measurementId: "G-5XM1V6C9M9"
+            appId: "1:931715470347:web:68bf78f3f7abde18cbe30e"
         };
-
-        // Initialize Firebase
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
-        
-        // Navigation Functions (Sidebar open/close)
-        function openNav() {
-            document.getElementById("mySidebar").style.width = "280px";
-        }
 
-        function closeNav() {
-            document.getElementById("mySidebar").style.width = "0";
-        }
-    </script>
-    <div id="player-template" style="display: none;">
-        <div class="player-container" style="background: #000; border-radius: 8px; overflow: hidden; position: relative; margin: 10px;">
-            
-            <div id="top-ad" style="width: 100%; min-height: 50px; background: #111; display: flex; align-items: center; justify-content: center; color: #444; font-size: 11px; border-bottom: 1px solid #222;">
-                ADVERTISEMENT AREA
-            </div>
+        // Functions
+        function openNav() { document.getElementById("mySidebar").style.width = "280px"; }
+        function closeNav() { document.getElementById("mySidebar").style.width = "0"; }
 
-            <div class="video-wrapper" style="position: relative; padding-bottom: 56.25%; height: 0; background: #000;">
-                <iframe id="main-player" src="" 
-                    style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;" 
-                    frameborder="0" allow="autoplay; encrypted-media; fullscreen" allowfullscreen>
-                </iframe>
-            </div>
-
-            <div style="background: #0a1118; padding: 15px; display: flex; justify-content: space-between; align-items: center; color: white;">
-                <div class="left-ctrl">
-                    <span id="playing-title" style="font-weight: 600; font-size: 14px; color: #28a745;">
-                        <i class="fas fa-circle" style="font-size: 8px; vertical-align: middle; margin-right: 5px; animation: live-blink 1s infinite;"></i> 
-                        Connecting Stream...
-                    </span>
-                </div>
-                <div class="right-ctrl" style="display: flex; gap: 20px;">
-                    <i class="material-icons" title="Cast to TV" style="cursor: pointer; font-size: 22px; color: #d1d1d1;">cast</i>
-                    <i class="material-icons" title="Rotate Screen" style="cursor: pointer; font-size: 22px; color: #d1d1d1;">screen_rotation</i>
-                    <i class="material-icons" title="Volume" style="cursor: pointer; font-size: 22px; color: #d1d1d1;">volume_up</i>
-                </div>
-            </div>
-
-            <div id="bottom-ad" style="width: 100%; min-height: 90px; background: #111; display: flex; align-items: center; justify-content: center; color: #444; font-size: 11px; border-top: 1px solid #222;">
-                ADVERTISEMENT AREA (Responsive)
-            </div>
-        </div>
-        
-        <div style="padding: 10px 20px;">
-            <button onclick="showHome()" style="background: #001f3f; color: white; border: none; padding: 12px 25px; border-radius: 5px; cursor: pointer; font-weight: 600; display: flex; align-items: center; gap: 10px;">
-                <i class="fas fa-arrow-left"></i> Back to Live Schedule
-            </button>
-        </div>
-    </div>
-    <script>
-        const contentArea = document.getElementById('content-area');
-
-        // 1. Home Function: Firebase se matches load karna
         function showHome() {
             closeNav();
-            contentArea.innerHTML = '<div class="match-grid" id="match-container"><p style="text-align:center; padding:20px; color:#666;">Scanning for Live Matches...</p></div>';
+            const area = document.getElementById('content-area');
+            area.innerHTML = '<div class="match-grid" id="match-container">Loading...</div>';
             
             db.ref("matches").on("value", (snapshot) => {
                 const container = document.getElementById('match-container');
-                if (!container) return;
-                
-                container.innerHTML = ""; // Loader hatayen
-                
-                if (!snapshot.exists()) {
-                    container.innerHTML = '<p style="text-align:center; grid-column: 1/-1; padding:50px; color:#999;">No Live Matches Available Right Now.</p>';
-                    return;
-                }
-
-                snapshot.forEach((childSnapshot) => {
-                    const data = childSnapshot.val();
-                    const card = `
+                if(!container) return;
+                container.innerHTML = "";
+                snapshot.forEach((child) => {
+                    const data = child.val();
+                    container.innerHTML += `
                         <div class="card">
-                            <span class="series-name">${data.series || 'Live Event'}</span>
+                            <span class="series-name">${data.series || 'Live Match'}</span>
                             <div class="match-info-row">
                                 <span class="match-title">${data.team1} vs ${data.team2}</span>
                                 <span class="live-badge">LIVE</span>
                             </div>
                             <div class="btn-group">
-                                <a href="javascript:void(0)" onclick="playVideo('${data.link1}', '${data.team1} vs ${data.team2}')" class="stream-btn btn-dark">Server 1</a>
-                                <a href="javascript:void(0)" onclick="playVideo('${data.link2}', '${data.team1} vs ${data.team2}')" class="stream-btn btn-blue">Server 2</a>
-                                <a href="javascript:void(0)" onclick="playVideo('${data.link3}', '${data.team1} vs ${data.team2}')" class="stream-btn btn-orange">Server 3</a>
+                                <a href="javascript:void(0)" onclick="playVideo('${data.link1}')" class="stream-btn btn-dark">Server 1</a>
+                                <a href="javascript:void(0)" onclick="playVideo('${data.link2}')" class="stream-btn btn-blue">Server 2</a>
+                                <a href="javascript:void(0)" onclick="playVideo('${data.link3}')" class="stream-btn btn-orange">Server 3</a>
                             </div>
                         </div>`;
-                    container.innerHTML += card;
                 });
             });
         }
 
-        // 2. Player Function: Video chalane ke liye
-        function playVideo(url, title) {
-            if(!url || url === "undefined") {
-                alert("Stream not available yet. Try another server!");
-                return;
-            }
-            const playerTemplate = document.getElementById('player-template').innerHTML;
-            contentArea.innerHTML = playerTemplate;
+        function playVideo(url) {
+            document.getElementById('content-area').innerHTML = document.getElementById('player-template').innerHTML;
             document.getElementById('main-player').src = url;
-            document.getElementById('playing-title').innerHTML = `<i class="fas fa-circle" style="font-size: 8px; vertical-align: middle; margin-right: 5px; animation: live-blink 1s infinite;"></i> Playing: ${title}`;
-            window.scrollTo(0, 0);
         }
 
-        // 3. Navigation Functions
-        function showPrivacy() {
-            closeNav();
-            contentArea.innerHTML = document.getElementById('privacy-text').innerHTML;
-        }
+        function showPrivacy() { closeNav(); document.getElementById('content-area').innerHTML = document.getElementById('privacy-text').innerHTML; }
+        function showContact() { closeNav(); document.getElementById('content-area').innerHTML = document.getElementById('contact-text').innerHTML; }
+        function showDownload() { closeNav(); document.getElementById('content-area').innerHTML = document.getElementById('download-template').innerHTML; }
 
-        function showContact() {
-            closeNav();
-            contentArea.innerHTML = document.getElementById('contact-text').innerHTML;
-        }
-
-        function showDownload() {
-            closeNav();
-            contentArea.innerHTML = document.getElementById('download-template').innerHTML;
-        }
-
-        // Auto-load Home on Startup
         window.onload = showHome;
     </script>
 </body>
