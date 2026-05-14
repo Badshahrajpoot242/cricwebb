@@ -2,204 +2,403 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CricWebb - Live Streaming</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>CricWebb - Live Cricket Streaming</title>
+    
+    <meta name="description" content="Watch Live Cricket Streaming on CricWebb. Best quality servers for PTV Sports and International Cricket.">
+    <meta name="theme-color" content="#001f3f">
+
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
 
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <style>
-        body {
-            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-            background-color: #ffffff;
-            margin: 0;
-            padding: 15px;
-        }
-
-        .header {
-            background-color: #001f3f;
-            padding: 12px 20px;
-            margin-bottom: 20px;
-            border-radius: 4px;
-        }
-
-        .header h1 {
-            color: #fff;
-            margin: 0;
-            font-size: 24px;
-            font-style: italic;
-            text-align: left;
-        }
-
-        /* Match Grid - WebCric Style */
-        .match-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(360px, 360px));
-            gap: 25px;
-            justify-content: flex-start;
-        }
-
-        .card {
-            border: 1px solid #f0f0f0;
-            padding: 15px;
-            background: #fff;
-            transition: 0.3s;
-        }
-
-        .card:hover {
-            border-color: #ccc;
-        }
-
-        .logos {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-            margin-bottom: 12px;
-        }
-
-        .logos img {
-            width: 75px;
-            height: 75px;
-            object-fit: contain;
-        }
-
-        .vs {
-            font-size: 18px;
-            color: #999;
-            font-weight: bold;
-        }
-
-        .series-name {
-            font-size: 11px;
-            color: #555;
-            margin-bottom: 5px;
-            display: block;
-            line-height: 1.2;
-        }
-
-        .live-tag {
-            background-color: #28a745; /* WebCric Green */
-            color: white;
-            font-size: 10px;
-            padding: 2px 5px;
-            font-weight: bold;
-            border-radius: 2px;
-            margin-right: 5px;
-            vertical-align: middle;
-        }
-
-        .match-title {
-            font-size: 16px;
-            font-weight: bold;
-            color: #333;
-            line-height: 1.4;
-        }
-
-        .venue {
-            font-size: 11px;
-            color: #888;
-            margin-top: 5px;
-            margin-bottom: 15px;
-        }
-
-        .btn-container {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 4px;
-            margin-bottom: 5px;
-        }
-
-        .btn {
-            text-decoration: none;
-            color: white;
-            font-size: 11px;
-            padding: 8px 2px;
-            text-align: center;
-            font-weight: bold;
-            border-radius: 2px;
-            text-transform: uppercase;
-        }
-
-        .q-btn { background-color: #333; } /* Quality Black */
-        .s-btn { background-color: #3498db; } /* Server Blue */
-        .p-btn { background-color: #ff5722; } /* PTV Sports Orange */
-
-        .btn:hover { opacity: 0.85; }
+        /* Part 4 mein hum detail CSS likhenge, abhi sirf basic layout set kar rahe hain */
+        body { margin: 0; padding: 0; font-family: 'Poppins', sans-serif; background-color: #f4f7f6; overflow-x: hidden; }
+        #main-content { transition: margin-left .3s; padding: 0; }
     </style>
 </head>
 <body>
 
-    <div class="header">
-        <h1>CricWebb</h1>
-    </div>
-
-    <div class="match-grid" id="match-list">
+    <div id="mySidebar" class="sidebar">
+        <div class="sidebar-header">
+            <img src="https://via.placeholder.com/100x40?text=CricWebb" alt="Logo">
+            <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+        </div>
+        
+        <div class="menu-items">
+            <a href="#" onclick="showHome()"><i class="fa fa-home"></i> Home</a>
+            <a href="#" onclick="showPrivacy()"><i class="fa fa-shield-alt"></i> Privacy Policy</a>
+            <a href="#" onclick="showContact()"><i class="fa fa-envelope"></i> Contact Us</a>
+            <a href="#" onclick="showDownload()"><i class="fa fa-download"></i> Download App</a>
         </div>
 
+        <div class="sidebar-footer">
+            <p>&copy; 2026 CricWebb Professional</p>
+        </div>
+    </div>
+
+    <div class="header">
+        <button class="openbtn" onclick="openNav()">&#9776;</button>
+        <span class="logo-text">CricWebb</span>
+    </div>
+
+    <div id="main">
+        <div id="content-area"></div>
+    </div>
+    <style>
+        /* Sidebar Basic Design */
+        .sidebar {
+            height: 100%;
+            width: 0;
+            position: fixed;
+            z-index: 1000;
+            top: 0;
+            left: 0;
+            background-color: #001f3f; /* Premium Dark Blue */
+            overflow-x: hidden;
+            transition: 0.5s;
+            padding-top: 60px;
+            box-shadow: 2px 0 15px rgba(0,0,0,0.5);
+        }
+
+        .sidebar-header {
+            padding: 0 25px;
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .sidebar .menu-items a {
+            padding: 15px 25px;
+            text-decoration: none;
+            font-size: 16px;
+            color: #d1d1d1;
+            display: block;
+            transition: 0.3s;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .sidebar .menu-items a i {
+            margin-right: 15px;
+            width: 20px;
+            color: #28a745; /* Green Icons */
+        }
+
+        .sidebar .menu-items a:hover {
+            background-color: #003366;
+            color: #ffffff;
+            padding-left: 35px;
+        }
+
+        .sidebar .closebtn {
+            position: absolute;
+            top: 15px;
+            right: 25px;
+            font-size: 36px;
+            color: #fff;
+            text-decoration: none;
+        }
+
+        /* Top Header Design */
+        .header {
+            background-color: #001f3f;
+            color: white;
+            padding: 12px 15px;
+            display: flex;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 999;
+        }
+
+        .openbtn {
+            font-size: 22px;
+            cursor: pointer;
+            background-color: transparent;
+            color: white;
+            border: none;
+            margin-right: 15px;
+        }
+
+        .logo-text {
+            font-size: 22px;
+            font-weight: 700;
+            font-style: italic;
+            letter-spacing: 1px;
+        }
+
+        .sidebar-footer {
+            position: absolute;
+            bottom: 20px;
+            width: 100%;
+            text-align: center;
+            color: #888;
+            font-size: 12px;
+        }
+    </style>
+        /* Match Cards Grid */
+        #content-area {
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .match-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+            gap: 20px;
+        }
+
+        /* Card Professional Design */
+        .card {
+            background: #ffffff;
+            border-radius: 8px;
+            border: 1px solid #e1e8ed;
+            padding: 15px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 15px rgba(0,0,0,0.1);
+            border-color: #001f3f;
+        }
+
+        .series-name {
+            font-size: 11px;
+            font-weight: 600;
+            color: #ef5350;
+            text-transform: uppercase;
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        .match-info-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 15px;
+        }
+
+        .match-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: #333;
+            flex: 1;
+        }
+
+        .live-badge {
+            background-color: #28a745;
+            color: white;
+            font-size: 10px;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-weight: bold;
+            animation: blink 1.5s infinite;
+        }
+
+        @keyframes blink {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+
+        /* Buttons Section */
+        .btn-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 5px;
+            margin-top: 10px;
+        }
+
+        .stream-btn {
+            text-decoration: none;
+            font-size: 12px;
+            font-weight: 600;
+            padding: 10px 5px;
+            text-align: center;
+            border-radius: 4px;
+            color: white;
+            transition: 0.3s;
+            text-transform: uppercase;
+        }
+
+        .btn-dark { background-color: #2c3e50; }
+        .btn-blue { background-color: #3498db; }
+        .btn-orange { background-color: #ff5722; }
+
+        .stream-btn:hover {
+            filter: brightness(1.2);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+    </style>
+    <div id="legal-templates" style="display: none;">
+        
+        <div id="privacy-text">
+            <h2 style="color: #001f3f;">Privacy Policy</h2>
+            <p>Welcome to CricWebb. We value your privacy. This policy explains how we treat your information.</p>
+            <p><b>1. Information Collection:</b> We do not collect any personal data from our users unless voluntarily provided via email.</p>
+            <p><b>2. Cookies:</b> We may use cookies to enhance user experience and analyze site traffic for better streaming performance.</p>
+            <p><b>3. Third-Party Links:</b> Our site contains links to external servers. We are not responsible for the content or practices of these third-party sites.</p>
+            <p><b>4. Contact:</b> If you have questions about this policy, contact us at the official email provided in the Contact section.</p>
+        </div>
+
+        <div id="contact-text">
+            <h2 style="color: #001f3f;">Contact Us</h2>
+            <p>Have any queries, business proposals, or copyright concerns? Feel free to reach out to our dedicated team.</p>
+            <div style="background: #f4f7f6; padding: 20px; border-left: 5px solid #28a745; margin-top: 15px;">
+                <p style="margin: 0; font-weight: 600;">Official Support Email:</p>
+                <a href="mailto:sultanprince025@gmail.com" style="color: #3498db; font-size: 18px; text-decoration: none;">sultanprince025@gmail.com</a>
+            </div>
+            <p style="margin-top: 20px; font-size: 13px; color: #666;">We usually respond within 24-48 hours.</p>
+        </div>
+
+    </div>
+    <div id="download-template" style="display: none;">
+        <div style="text-align: center; padding: 40px 20px; background: #fff; border-radius: 12px; box-shadow: 0 5px 15px rgba(0,0,0,0.1);">
+            <div style="font-size: 50px; color: #28a745; margin-bottom: 20px;">
+                <i class="fas fa-mobile-alt"></i>
+            </div>
+            <h2 style="color: #001f3f; margin-bottom: 10px;">Download CricWebb Official App</h2>
+            <p style="color: #666; margin-bottom: 30px;">Get the best live cricket experience, faster notifications, and data-saving features directly on your Android device.</p>
+            
+            <a href="https://86xf0kqg.r.ap-southeast-1.awstrack.me/L0/https:%2F%2Fapkpure.com%2Fp%2Fcricket.live140/1/010e019e1b8c48ef-fd22c8df-a8a1-4e13-a49c-1e6f5309aa57-000000/Ed3e-mhUvTvLeHXm2onLCXQQt1o=258" 
+               target="_blank" 
+               style="display: inline-block; background: linear-gradient(135deg, #28a745 0%, #218838 100%); color: white; padding: 15px 35px; border-radius: 50px; text-decoration: none; font-weight: bold; font-size: 18px; box-shadow: 0 4px 15px rgba(40, 167, 69, 0.4); transition: 0.3s;">
+                <i class="fab fa-android"></i> DOWNLOAD NOW
+            </a>
+            
+            <p style="margin-top: 25px; font-size: 12px; color: #999;">Safe & Secure APK via APKPure</p>
+        </div>
+    </div>
     <script>
-        // Aapki Firebase Configuration
+        // Aapka specific Firebase Config
         const firebaseConfig = {
-            apiKey: "AIzaSyB...", // Yahan apni API Key zaroor check kar lein
-            authDomain: "cric-webb.firebaseapp.com",
-            databaseURL: "https://cric-webb-default-rtdb.firebaseio.com",
-            projectId: "cric-webb",
-            storageBucket: "cric-webb.appspot.com",
-            messagingSenderId: "367351405908",
-            appId: "1:367351405908:web:86551b32d011502476b701"
+            apiKey: "AIzaSyCEg2IJax96IMMsREqEX85_zHRkVqFLcN0",
+            authDomain: "cricwebb.firebaseapp.com",
+            databaseURL: "https://cricwebb-default-rtdb.firebaseio.com",
+            projectId: "cricwebb",
+            storageBucket: "cricwebb.firebasestorage.app",
+            messagingSenderId: "931715470347",
+            appId: "1:931715470347:web:68bf78f3f7abde18cbe30e",
+            measurementId: "G-5XM1V6C9M9"
         };
 
         // Initialize Firebase
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
+        
+        // Navigation Functions (Sidebar open/close)
+        function openNav() {
+            document.getElementById("mySidebar").style.width = "280px";
+        }
 
-        function loadMatches() {
-            const list = document.getElementById('match-list');
+        function closeNav() {
+            document.getElementById("mySidebar").style.width = "0";
+        }
+    </script>
+    <div id="player-template" style="display: none;">
+        <div class="player-container" style="background: #000; border-radius: 8px; overflow: hidden; position: relative;">
             
-            // Firebase 'matches' node se data lena
-            db.ref('matches').on('value', (snapshot) => {
-                list.innerHTML = '';
-                const data = snapshot.val();
+            <div class="ad-label" style="color: #666; font-size: 10px; text-align: center; padding: 5px;">ADVERTISEMENT</div>
+            <div id="top-ad" style="width: 100%; height: 60px; background: #111; margin-bottom: 5px; display: flex; align-items: center; justify-content: center; color: #444; font-size: 12px; border: 1px dashed #333;">
+                Ads Space (Top)
+            </div>
 
-                if (data) {
-                    for (let id in data) {
-                        const m = data[id];
-                        list.innerHTML += `
-                            <div class="card">
-                                <div class="logos">
-                                    <img src="${m.T1_Logo || ''}" alt="Team 1">
-                                    <span class="vs">VS</span>
-                                    <img src="${m.T2_Logo || ''}" alt="Team 2">
-                                </div>
+            <div class="video-wrapper" style="position: relative; padding-bottom: 56.25%; height: 0; background: #000;">
+                <iframe id="main-player" src="" 
+                    style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;" 
+                    frameborder="0" allow="autoplay; encrypted-media; fullscreen; picture-in-picture" allowfullscreen>
+                </iframe>
+            </div>
 
-                                <span class="series-name">${m.Series || ''}</span>
-                                
-                                <div>
-                                    <span class="live-tag">LIVE STREAMING</span>
-                                    <span class="match-title">${m.Title || 'Match Title'}</span>
-                                </div>
+            <div class="player-controls" style="background: #0a1118; padding: 15px; display: flex; justify-content: space-between; align-items: center; color: white;">
+                <div class="left-ctrl">
+                    <span id="playing-title" style="font-weight: 600; font-size: 14px; color: #28a745;">Live Stream</span>
+                </div>
+                <div class="right-ctrl" style="display: flex; gap: 15px;">
+                    <i class="material-icons" title="Cast to TV" style="cursor: pointer; font-size: 20px;">cast</i>
+                    <i class="material-icons" title="Rotate Screen" style="cursor: pointer; font-size: 20px;">screen_rotation</i>
+                    <i class="material-icons" title="Volume" style="cursor: pointer; font-size: 20px;">volume_up</i>
+                </div>
+            </div>
 
-                                <div class="venue">${m.Venue || 'Live from Stadium'}</div>
+            <div id="bottom-ad" style="width: 100%; height: 90px; background: #111; margin-top: 10px; display: flex; align-items: center; justify-content: center; color: #444; font-size: 12px; border: 1px dashed #333;">
+                Ads Space (Bottom)
+            </div>
+        </div>
+        
+        <button onclick="showHome()" style="margin-top: 15px; background: #001f3f; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer;">
+            <i class="fa fa-arrow-left"></i> Back to Schedule
+        </button>
+    </div>
+    <script>
+        const contentArea = document.getElementById('content-area');
 
-                                <div class="btn-container">
-                                    <a href="${m.Low || '#'}" target="_blank" class="btn q-btn">Low Quality</a>
-                                    <a href="${m.Medium || '#'}" target="_blank" class="btn q-btn">Medium Quality</a>
-                                    <a href="${m.High || '#'}" target="_blank" class="btn q-btn">High Quality</a>
-                                </div>
-
-                                <div class="btn-container">
-                                    <a href="${m.Server1 || '#'}" target="_blank" class="btn s-btn">Server 1</a>
-                                    <a href="${m.Server2 || '#'}" target="_blank" class="btn s-btn">Server 2</a>
-                                    <a href="${m.Special || '#'}" target="_blank" class="btn p-btn">PTV SPORTS</a>
-                                </div>
+        // 1. Matches Load Karne Ka Function (Firebase)
+        function showHome() {
+            closeNav();
+            contentArea.innerHTML = '<div class="match-grid" id="match-container"><p style="text-align:center;">Loading Live Matches...</p></div>';
+            
+            db.ref("matches").on("value", (snapshot) => {
+                const container = document.getElementById('match-container');
+                container.innerHTML = ""; // Clear loader
+                
+                snapshot.forEach((childSnapshot) => {
+                    const data = childSnapshot.val();
+                    const card = `
+                        <div class="card">
+                            <span class="series-name">${data.series || 'International Cricket'}</span>
+                            <div class="match-info-row">
+                                <span class="match-title">${data.team1} vs ${data.team2}</span>
+                                <span class="live-badge">LIVE</span>
                             </div>
-                        `;
-                    }
-                } else {
-                    list.innerHTML = '<p style="padding:20px;">Matches are currently not available. Please check Firebase.</p>';
-                }
+                            <div class="btn-group">
+                                <a href="javascript:void(0)" onclick="playVideo('${data.link1}', '${data.team1} vs ${data.team2}')" class="stream-btn btn-dark">Server 1</a>
+                                <a href="javascript:void(0)" onclick="playVideo('${data.link2}', '${data.team1} vs ${data.team2}')" class="stream-btn btn-blue">Server 2</a>
+                                <a href="javascript:void(0)" onclick="playVideo('${data.link3}', '${data.team1} vs ${data.team2}')" class="stream-btn btn-orange">Server 3</a>
+                            </div>
+                        </div>`;
+                    container.innerHTML += card;
+                });
             });
         }
 
-        loadMatches();
+        // 2. Player Chalanay Ka Function
+        function playVideo(url, title) {
+            const playerTemplate = document.getElementById('player-template').innerHTML;
+            contentArea.innerHTML = playerTemplate;
+            document.getElementById('main-player').src = url;
+            document.getElementById('playing-title').innerText = "Streaming: " + title;
+            window.scrollTo(0, 0);
+        }
+
+        // 3. Privacy Policy Show Karna
+        function showPrivacy() {
+            closeNav();
+            contentArea.innerHTML = document.getElementById('privacy-text').innerHTML;
+        }
+
+        // 4. Contact Us Show Karna
+        function showContact() {
+            closeNav();
+            contentArea.innerHTML = document.getElementById('contact-text').innerHTML;
+        }
+
+        // 5. Download App Show Karna
+        function showDownload() {
+            closeNav();
+            contentArea.innerHTML = document.getElementById('download-template').innerHTML;
+        }
+
+        // Site khulne par pehle Home load ho
+        window.onload = showHome;
     </script>
 </body>
 </html>
